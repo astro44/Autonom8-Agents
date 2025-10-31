@@ -1,0 +1,34 @@
+# Agent Template Directory .gitignore
+
+# ====================
+# Agent Testing
+# ====================
+test_outputs/
+test_runs/
+*.test.log
+
+# ====================
+# Cache & Temp
+# ====================
+.cache/
+*.tmp
+*.bak
+*~
+
+# ====================
+# IDE Files
+# ====================
+.idea/
+.vscode/
+*.sublime-*
+
+# ====================
+# Agent Index (generated)
+# ====================
+agent-index.json.bak
+
+# ====================
+# Keep Agent Definitions
+# ====================
+!**/*.md
+!agent-index.json

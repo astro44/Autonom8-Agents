@@ -1,0 +1,6 @@
+{
+  "claude": ["brutal-critic-agent", "framework-counter-agent", "miner-executer"],
+  "gemini": ["doc-summarizer-agent", "test-generator-agent", "validator-agent"],
+  "codex": ["api-builder-agent", "code-generator-agent", "refactor-agent"],
+  "opencode": ["diff-analyzer-agent", "pr-drafter-agent", "quick-fix-agent"]
+}
