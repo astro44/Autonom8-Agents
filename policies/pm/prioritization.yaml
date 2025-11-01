@@ -1,0 +1,98 @@
+# PM Agent - Default Prioritization Policy
+# This is the global default; tenants can override at:
+# tenants/<tenant>/policies/pm/prioritization.yaml
+
+# Scoring Model: RICE or ICE
+model: RICE
+
+# Scoring Weights (multipliers applied to base scores)
+weights:
+  reach: 1.0        # How many users/systems affected
+  impact: 1.0       # Business impact magnitude
+  confidence: 1.0   # Certainty of estimates
+  effort: 1.0       # Person-days required
+
+# SLA Targets (time limits before escalation)
+slas:
+  incident_hours: 2           # Critical incidents must start within 2 hours
+  high_priority_hours: 24     # High priority within 24 hours
+  medium_priority_days: 7     # Medium priority within 7 days
+  backlog_review_days: 30     # Review entire backlog monthly
+
+# Auto-escalation rules
+escalation:
+  enabled: true
+  check_interval_hours: 1
+  sla_breach_notification: true
+
+# Priority Thresholds (RICE score ranges)
+thresholds:
+  critical: 200       # Score >= 200 → incidents queue
+  high: 75            # Score >= 75 → high priority
+  medium: 25          # Score >= 25 → medium priority
+  low: 5              # Score >= 5 → low priority
+  deferred: 0         # Score < 5 → deferred
+
+# Change Freeze Windows
+calendars:
+  change_freeze:
+    - "2025-12-20..2026-01-05"  # Holiday freeze
+    - "2025-11-28..2025-11-29"  # Thanksgiving
+
+  # During freeze, only these severities allowed
+  freeze_exceptions:
+    - critical
+    - security
+
+# Team Capacity (optional)
+capacity:
+  daily_hours: 6              # Productive hours per day per person
+  team_size: 5                # Number of team members
+  utilization_target: 0.80    # Aim for 80% utilization
+  buffer_percentage: 0.20     # Keep 20% buffer for unplanned work
+
+# Classification Rules
+classification:
+  # Auto-route to incidents based on keywords
+  incident_keywords:
+    - "outage"
+    - "breach"
+    - "security"
+    - "critical bug"
+    - "production down"
+
+  # Auto-defer based on keywords
+  defer_keywords:
+    - "nice to have"
+    - "future"
+    - "someday"
+
+# Scoring Defaults (when fields missing)
+defaults:
+  reach: 1
+  impact: 0.5         # medium impact
+  confidence: 0.5     # 50% confidence
+  effort: 1          # 1 person-day
+
+# Reporting
+reporting:
+  daily_plan_enabled: true
+  weekly_summary_enabled: true
+  monthly_metrics_enabled: true
+
+# Integration
+integrations:
+  slack:
+    enabled: false
+    webhook_url: ""
+    channels:
+      incidents: "#incidents"
+      daily_plan: "#planning"
+
+  github:
+    enabled: false
+    sync_issues: false
+
+  jira:
+    enabled: false
+    sync_tickets: false

@@ -1,0 +1,229 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://autonom8.dev/schemas/pm/prioritization.v1.json",
+  "title": "PM Prioritization Output Schema",
+  "description": "Schema for PM agent prioritization output",
+  "type": "object",
+  "required": ["date", "tenant", "model", "items_processed"],
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of prioritization run"
+    },
+    "tenant": {
+      "type": "string",
+      "description": "Tenant identifier"
+    },
+    "model": {
+      "type": "string",
+      "enum": ["RICE", "ICE"],
+      "description": "Scoring model used"
+    },
+    "weights": {
+      "type": "object",
+      "description": "Weights applied to scoring",
+      "properties": {
+        "reach": {
+          "type": "number",
+          "minimum": 0
+        },
+        "impact": {
+          "type": "number",
+          "minimum": 0
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0
+        },
+        "effort": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "items_processed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of items processed"
+    },
+    "items_by_priority": {
+      "type": "object",
+      "properties": {
+        "incidents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "medium": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "low": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deferred": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["incidents", "high", "medium", "low", "deferred"]
+    },
+    "items_by_type": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "top_priorities": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "priority": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "title", "score", "priority"]
+      },
+      "description": "Top 10 highest priority items"
+    },
+    "sla_breaches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "sla_type": {
+            "type": "string"
+          },
+          "breach_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "age_hours": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Items breaching or near SLA breach"
+    },
+    "blocked_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of items blocked by dependencies"
+    },
+    "deferred_reasons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Count of items deferred by reason (freeze, blocked, low_score, etc.)"
+    },
+    "capacity_analysis": {
+      "type": "object",
+      "properties": {
+        "total_capacity_hours": {
+          "type": "number"
+        },
+        "planned_work_hours": {
+          "type": "number"
+        },
+        "utilization_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "overflow_hours": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "change_freeze": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "window": {
+          "type": "string"
+        },
+        "exceptions_allowed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "average_score": {
+          "type": "number"
+        },
+        "median_score": {
+          "type": "number"
+        },
+        "average_effort_days": {
+          "type": "number"
+        },
+        "total_estimated_effort_days": {
+          "type": "number"
+        }
+      }
+    },
+    "execution_time_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Time taken to run prioritization"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this prioritization was generated"
+    },
+    "agent_version": {
+      "type": "string",
+      "description": "Version of PM agent that generated this"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Any warnings or issues encountered"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Any errors encountered (non-fatal)"
+    }
+  }
+}

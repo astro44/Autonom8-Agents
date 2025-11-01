@@ -1,0 +1,84 @@
+# Autonom8-Agents Module Manifest
+# Auto-discovery configuration for Core framework
+
+type: agents
+module_name: Autonom8-Agents
+version: 1.0.0
+description: "General-purpose AI agent definitions and playbooks"
+
+# Agents provided by this module
+provides:
+  - pm-agent
+  - brutal-critic-agent
+  - framework-counter-agent
+  - miner-executer
+
+# Directory paths for agent discovery
+paths:
+  claude_agents: ".claude/agents"
+  gemini_agents: ".gemini/agents"
+  codex_agents: ".codex/agents"
+  opencode_agents: ".opencode/agents"
+  policies: "policies"
+  schemas: "schemas"
+
+# Provider-specific agent locations
+agents:
+  pm-agent:
+    providers:
+      - provider: claude
+        path: ".claude/agents/pm/pm-agent.md"
+    policies:
+      - "policies/pm/prioritization.yaml"
+    schemas:
+      - "schemas/pm/ticket-schema.json"
+      - "schemas/pm/prioritization-schema.json"
+    version: "1.0.0"
+    risk_level: low
+
+  brutal-critic-agent:
+    providers:
+      - provider: claude
+        path: ".claude/agents/brutal-critic-agent.md"
+    version: "1.0.0"
+    risk_level: high
+
+  framework-counter-agent:
+    providers:
+      - provider: claude
+        path: ".claude/agents/framework-counter-agent.md"
+    version: "1.0.0"
+    risk_level: low
+
+  miner-executer:
+    providers:
+      - provider: claude
+        path: ".claude/agents/miner-executer.md"
+    version: "1.0.0"
+    risk_level: medium
+
+# Dependencies on other modules
+dependencies:
+  - module: Autonom8-Knowledge
+    required: false
+    reason: "Shared schemas and policies"
+
+  - module: Autonom8-SecOps
+    required: false
+    reason: "Security-specific agents may reference SecOps policies"
+
+# Integration hooks
+hooks:
+  pre_agent_load:
+    - "scripts/validate-agent-schema.sh"
+  post_agent_run:
+    - "scripts/log-agent-execution.sh"
+
+# Module metadata
+metadata:
+  maintainer: "Autonom8 Core Team"
+  repository: "https://github.com/astro44/Autonom8-Agents"
+  documentation: "https://docs.autonom8.dev/agents"
+  license: "Proprietary"
+  created: "2025-10-31"
+  updated: "2025-10-31"
