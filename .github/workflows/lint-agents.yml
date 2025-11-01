@@ -1,0 +1,139 @@
+name: Lint Agent Locations
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-agent-locations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate agent locations
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating agent locations..."
+
+          # Allowed locations for agent files
+          ALLOWED_PATTERNS=(
+            "agents/**/*.md"
+            ".claude/overrides/*.md"
+            ".gemini/overrides/*.md"
+            ".codex/overrides/*.md"
+            ".opencode/overrides/*.md"
+          )
+
+          # Find all .md files that might be agents (exclude README.md, manifest files)
+          INVALID_AGENTS=()
+
+          # Find all .md files
+          while IFS= read -r -d '' file; do
+            # Skip allowed files
+            if [[ "$file" == *"README.md" ]] || \
+               [[ "$file" == *"agents.md" ]] || \
+               [[ "$file" == *"claude.md" ]] || \
+               [[ "$file" == *"gemini.md" ]] || \
+               [[ "$file" == *"codex.md" ]] || \
+               [[ "$file" == *"opencode.md" ]] || \
+               [[ "$file" == *"STRUCTURE.md" ]]; then
+              continue
+            fi
+
+            # Check if file is in allowed location
+            VALID=false
+            for pattern in "${ALLOWED_PATTERNS[@]}"; do
+              # Convert glob pattern to regex
+              regex="${pattern//\*\*/.*}"
+              regex="${regex//\*/[^/]*}"
+              regex="^${regex}$"
+
+              if [[ "$file" =~ $regex ]]; then
+                VALID=true
+                break
+              fi
+            done
+
+            if [[ "$VALID" == false ]]; then
+              INVALID_AGENTS+=("$file")
+            fi
+          done < <(find . -type f -name "*.md" -not -path "./.git/*" -print0)
+
+          # Report results
+          if [ ${#INVALID_AGENTS[@]} -gt 0 ]; then
+            echo "❌ ERROR: Found agent files in invalid locations:"
+            for agent in "${INVALID_AGENTS[@]}"; do
+              echo "  - $agent"
+            done
+            echo ""
+            echo "Agents must be in one of these locations:"
+            for pattern in "${ALLOWED_PATTERNS[@]}"; do
+              echo "  - $pattern"
+            done
+            exit 1
+          else
+            echo "✅ All agent files are in valid locations"
+          fi
+
+      - name: Validate agent-index.json sync
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating agent-index.json is in sync..."
+
+          # Generate expected index
+          python3 - <<'PY' > /tmp/expected-index.json
+          import json, os
+          root="agents"
+          out={}
+          for d,_,fs in os.walk(root):
+              for f in fs:
+                  if f.endswith(".md") and f != "README.md":
+                      agent_id = f[:-3]
+                      out[agent_id] = os.path.join(d, f)
+          print(json.dumps(out, indent=2, sort_keys=True))
+          PY
+
+          # Compare with committed index
+          if ! diff -u agent-index.json /tmp/expected-index.json; then
+            echo "❌ ERROR: agent-index.json is out of sync!"
+            echo "Run 'make build-index' to regenerate it."
+            exit 1
+          else
+            echo "✅ agent-index.json is in sync"
+          fi
+
+      - name: Validate symlinks
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "🔍 Validating provider manifest symlinks..."
+
+          PROVIDERS=("claude" "gemini" "codex" "opencode")
+
+          for provider in "${PROVIDERS[@]}"; do
+            manifest_file=".${provider}/${provider}.md"
+
+            if [ ! -L "$manifest_file" ]; then
+              echo "❌ ERROR: $manifest_file is not a symlink"
+              exit 1
+            fi
+
+            target=$(readlink "$manifest_file")
+            if [ "$target" != "../agents.md" ]; then
+              echo "❌ ERROR: $manifest_file points to $target, expected ../agents.md"
+              exit 1
+            fi
+
+            echo "✅ $manifest_file → $target"
+          done
+
+          echo "✅ All provider manifests are valid symlinks"
