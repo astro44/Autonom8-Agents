@@ -24,6 +24,7 @@ All agents listed here are available to all providers unless overridden.
 | smoke-test-agent | `agents/qa/smoke-test-agent.md` | Fast smoke tests for critical paths | ✅ Active |
 | regression-test-agent | `agents/qa/regression-test-agent.md` | Comprehensive regression testing | ✅ Active |
 | curious-qa-agent | `agents/qa/curious-qa-agent.md` | Exploratory testing - finds unexpected bugs | ✅ Active |
+| devops-agent | `agents/devops/devops-agent.md` | Infrastructure, deployment, monitoring, incident response, RCA | ✅ Active |
 | monitor-agent | `agents/core/monitor-agent.md` | Observes systems and pipelines | 📋 Planned |
 | analyst-agent | `agents/core/analyst-agent.md` | Triages events and performs root-cause analysis | 📋 Planned |
 | reviewer-agent | `agents/core/reviewer-agent.md` | Validates fixes and ensures policy compliance | 📋 Planned |
