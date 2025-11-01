@@ -21,6 +21,9 @@ All agents listed here are available to all providers unless overridden.
 | doc-fixer | `agents/improvement/doc-fixer.md` | Updates and corrects documentation | ✅ Active |
 | prompt-tuner | `agents/improvement/prompt-tuner.md` | Optimizes prompts for cost/quality/latency | ✅ Active |
 | metrics-agent | `agents/improvement/metrics-agent.md` | Tracks metrics, SLOs, and costs | ✅ Active |
+| smoke-test-agent | `agents/qa/smoke-test-agent.md` | Fast smoke tests for critical paths | ✅ Active |
+| regression-test-agent | `agents/qa/regression-test-agent.md` | Comprehensive regression testing | ✅ Active |
+| curious-qa-agent | `agents/qa/curious-qa-agent.md` | Exploratory testing - finds unexpected bugs | ✅ Active |
 | monitor-agent | `agents/core/monitor-agent.md` | Observes systems and pipelines | 📋 Planned |
 | analyst-agent | `agents/core/analyst-agent.md` | Triages events and performs root-cause analysis | 📋 Planned |
 | reviewer-agent | `agents/core/reviewer-agent.md` | Validates fixes and ensures policy compliance | 📋 Planned |
@@ -42,6 +45,7 @@ All agents listed here are available to all providers unless overridden.
 - `api-builder-agent.md` - API endpoint generation
 - `code-generator-agent.md` - Code scaffolding
 - `refactor-agent.md` - Code refactoring specialist
+- `po-pm-agent.md` - Product Owner/PM - User stories and sprint planning
 
 ### OpenCode (.opencode/overrides/)
 - `diff-analyzer-agent.md` - Diff analysis and review
