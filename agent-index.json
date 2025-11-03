@@ -1,12 +1,16 @@
 {
   "bug-miner": "agents/improvement/bug-miner.md",
   "curious-qa-agent": "agents/qa/curious-qa-agent.md",
+  "dev-agent": "agents/dev/dev-agent.md",
   "devops-agent": "agents/devops/devops-agent.md",
   "doc-fixer": "agents/improvement/doc-fixer.md",
   "flow-synthesizer": "agents/improvement/flow-synthesizer.md",
   "metrics-agent": "agents/improvement/metrics-agent.md",
+  "ops-agent": "agents/ops/ops-agent.md",
   "pm-agent": "agents/pm/pm-agent.md",
   "prompt-tuner": "agents/improvement/prompt-tuner.md",
+  "qa-agent": "agents/qa/qa-agent.md",
   "regression-test-agent": "agents/qa/regression-test-agent.md",
-  "smoke-test-agent": "agents/qa/smoke-test-agent.md"
+  "smoke-test-agent": "agents/qa/smoke-test-agent.md",
+  "ui-agent": "agents/ui/ui-agent.md"
 }

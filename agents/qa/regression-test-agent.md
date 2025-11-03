@@ -1,5 +1,5 @@
 ---
-name: regression-test-agent
+name: Leo
 role: Regression Testing QA
 version: 1.0.0
 model: claude-sonnet-4-5

@@ -1,5 +1,5 @@
 ---
-name: metrics-agent
+name: David
 role: Metrics Reporting and Analysis
 version: 1.0.0
 model: claude-sonnet-4-5

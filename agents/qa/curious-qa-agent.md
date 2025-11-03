@@ -1,5 +1,5 @@
 ---
-name: curious-qa-agent
+name: Gabriel
 role: Randomly Curious QA / Exploratory Testing
 version: 1.0.0
 model: claude-sonnet-4-5

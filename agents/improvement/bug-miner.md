@@ -1,5 +1,5 @@
 ---
-name: bug-miner
+name: Alvaro
 role: Bug and Issue Detection
 version: 1.0.0
 model: claude-sonnet-4-5

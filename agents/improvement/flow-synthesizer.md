@@ -1,5 +1,5 @@
 ---
-name: flow-synthesizer
+name: Jimbo
 role: Node-RED Flow Improvement
 version: 1.0.0
 model: claude-sonnet-4-5

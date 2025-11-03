@@ -1,5 +1,5 @@
 ---
-name: prompt-tuner
+name: Sophia
 role: Agent Prompt Optimization
 version: 1.0.0
 model: claude-sonnet-4-5
