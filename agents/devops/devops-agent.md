@@ -1,5 +1,5 @@
 ---
-name: J.C.
+name: Brandon
 id: devops-agent
 provider: multi
 role: devops_engineer

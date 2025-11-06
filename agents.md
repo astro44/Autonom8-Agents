@@ -16,6 +16,10 @@ All agents listed here are available to all providers unless overridden.
 | Agent ID | Location | Description | Status |
 |----------|----------|-------------|--------|
 | pm-agent | `agents/pm/pm-agent.md` | Product Manager - RICE/ICE scoring and prioritization | ✅ Active |
+| po-agent | `agents/po/po-agent.md` | Product Owner - User stories, acceptance criteria, sprint planning | ✅ Active |
+| security-agent | `agents/security/security-agent.md` | Security reviews, vulnerability scanning, compliance validation | ✅ Active |
+| data-agent | `agents/data/data-agent.md` | Analytics, ETL pipelines, dashboards, metrics reporting | ✅ Active |
+| ui-agent | `agents/ui/ui-agent.md` | UI/UX design and implementation - Flutter, React, responsive design | ✅ Active |
 | bug-miner | `agents/improvement/bug-miner.md` | Mines bugs and issues from logs/tickets/metrics | ✅ Active |
 | flow-synthesizer | `agents/improvement/flow-synthesizer.md` | Creates/modifies Node-RED flows | ✅ Active |
 | doc-fixer | `agents/improvement/doc-fixer.md` | Updates and corrects documentation | ✅ Active |
@@ -93,5 +97,5 @@ Each provider has a manifest symlink that points to this canonical file:
 
 ---
 
-**Last Updated:** 2025-10-31
+**Last Updated:** 2025-11-06
 **Maintainer:** Autonom8 Core Team

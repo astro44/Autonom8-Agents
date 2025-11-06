@@ -1,0 +1,489 @@
+# RACI Matrix for Autonom8 IT Department
+# R = Responsible (does the work)
+# A = Accountable (final decision maker, only ONE per workflow)
+# C = Consulted (provides input before decision)
+# I = Informed (kept in the loop after decision)
+
+version: 1.0.0
+last_updated: 2025-11-06
+
+# ============================================
+# FEATURE DEVELOPMENT WORKFLOWS
+# ============================================
+
+feature_implementation:
+  description: "Standard feature development from user story to production"
+  responsible: dev-agent
+  accountable: po-agent
+  consulted:
+    - security-agent
+    - devops-agent
+    - ui-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+    - data-agent
+
+ui_feature_implementation:
+  description: "Frontend/UI feature development (Flutter, React, vanilla JS)"
+  responsible: ui-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - security-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+bug_fix:
+  description: "Bug fix from QA or production incident"
+  responsible: dev-agent
+  accountable: qa-agent
+  consulted:
+    - ops-agent
+    - security-agent
+  informed:
+    - po-agent
+    - pm-agent
+    - devops-agent
+
+# ============================================
+# TESTING & QUALITY ASSURANCE
+# ============================================
+
+test_planning:
+  description: "Test case creation and test strategy"
+  responsible: qa-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+    - po-agent
+  informed:
+    - pm-agent
+    - devops-agent
+
+smoke_testing:
+  description: "Fast critical path validation (< 5 min)"
+  responsible: smoke-test-agent
+  accountable: qa-agent
+  consulted: []
+  informed:
+    - dev-agent
+    - po-agent
+
+regression_testing:
+  description: "Comprehensive regression test suites"
+  responsible: regression-test-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+  informed:
+    - po-agent
+    - devops-agent
+
+exploratory_testing:
+  description: "Creative bug hunting and edge case discovery"
+  responsible: curious-qa-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+  informed:
+    - po-agent
+    - pm-agent
+
+# ============================================
+# SECURITY & COMPLIANCE
+# ============================================
+
+security_code_review:
+  description: "OWASP Top 10, vulnerability scanning, code security"
+  responsible: security-agent
+  accountable: security-agent
+  consulted:
+    - dev-agent
+  informed:
+    - qa-agent
+    - pm-agent
+    - devops-agent
+
+compliance_validation:
+  description: "SOC2, HIPAA, GDPR compliance checks"
+  responsible: security-agent
+  accountable: security-agent
+  consulted:
+    - devops-agent
+    - ops-agent
+  informed:
+    - pm-agent
+    - data-agent
+
+security_incident_response:
+  description: "Security vulnerability or breach triage"
+  responsible: security-agent
+  accountable: security-agent
+  consulted:
+    - ops-agent
+    - devops-agent
+    - dev-agent
+  informed:
+    - pm-agent
+    - po-agent
+
+# ============================================
+# INFRASTRUCTURE & DEPLOYMENT
+# ============================================
+
+infrastructure_changes:
+  description: "Terraform/IaC, K8s config, cloud resources"
+  responsible: devops-agent
+  accountable: devops-agent
+  consulted:
+    - ops-agent
+    - security-agent
+    - dev-agent
+  informed:
+    - pm-agent
+    - data-agent
+
+deployment_staging:
+  description: "Deploy to staging environment"
+  responsible: devops-agent
+  accountable: devops-agent
+  consulted:
+    - qa-agent
+    - ops-agent
+  informed:
+    - dev-agent
+    - po-agent
+
+deployment_production:
+  description: "Deploy to production environment"
+  responsible: devops-agent
+  accountable: ops-agent
+  consulted:
+    - devops-agent
+    - security-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - qa-agent
+    - dev-agent
+
+rollback:
+  description: "Rollback failed deployment"
+  responsible: devops-agent
+  accountable: ops-agent
+  consulted:
+    - dev-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - qa-agent
+
+# ============================================
+# OPERATIONS & MONITORING
+# ============================================
+
+production_monitoring:
+  description: "24/7 monitoring, alerting, SLO tracking"
+  responsible: ops-agent
+  accountable: ops-agent
+  consulted: []
+  informed:
+    - devops-agent
+    - data-agent
+
+incident_triage:
+  description: "Incident severity assessment and initial response"
+  responsible: ops-agent
+  accountable: ops-agent
+  consulted:
+    - dev-agent
+    - devops-agent
+    - security-agent
+  informed:
+    - pm-agent
+    - po-agent
+
+incident_p0_response:
+  description: "P0/P1 critical incident response"
+  responsible: ops-agent
+  accountable: ops-agent
+  consulted:
+    - dev-agent
+    - devops-agent
+  informed:
+    - pm-agent
+    - security-agent
+
+hotfix_deployment:
+  description: "Emergency production hotfix"
+  responsible: ops-agent
+  accountable: ops-agent
+  consulted:
+    - dev-agent
+    - devops-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - qa-agent
+
+root_cause_analysis:
+  description: "Post-incident RCA and remediation planning"
+  responsible: ops-agent
+  accountable: ops-agent
+  consulted:
+    - dev-agent
+    - devops-agent
+    - security-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - data-agent
+
+# ============================================
+# PRODUCT MANAGEMENT & PLANNING
+# ============================================
+
+proposal_triage:
+  description: "Initial proposal review, duplicate detection"
+  responsible: pm-agent
+  accountable: pm-agent
+  consulted:
+    - po-agent
+    - data-agent
+  informed:
+    - dev-agent
+
+feature_prioritization:
+  description: "RICE/ICE scoring, roadmap planning"
+  responsible: pm-agent
+  accountable: pm-agent
+  consulted:
+    - po-agent
+    - data-agent
+    - dev-agent
+  informed:
+    - ops-agent
+    - devops-agent
+    - security-agent
+
+user_story_creation:
+  description: "Convert proposals to user stories with acceptance criteria"
+  responsible: po-agent
+  accountable: po-agent
+  consulted:
+    - pm-agent
+    - dev-agent
+    - ui-agent
+  informed:
+    - qa-agent
+    - security-agent
+
+sprint_planning:
+  description: "Sprint backlog selection, capacity planning"
+  responsible: po-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - qa-agent
+    - devops-agent
+  informed:
+    - pm-agent
+    - ops-agent
+
+backlog_grooming:
+  description: "Story refinement, estimation, prioritization"
+  responsible: po-agent
+  accountable: po-agent
+  consulted:
+    - pm-agent
+    - dev-agent
+  informed:
+    - qa-agent
+
+# ============================================
+# DATA & ANALYTICS
+# ============================================
+
+metrics_collection:
+  description: "ETL pipelines, log aggregation, metric rollups"
+  responsible: data-agent
+  accountable: data-agent
+  consulted:
+    - ops-agent
+    - devops-agent
+  informed:
+    - pm-agent
+
+dashboard_creation:
+  description: "Metrics dashboards for PM/Dev/QA/DevOps/Ops"
+  responsible: data-agent
+  accountable: data-agent
+  consulted:
+    - pm-agent
+    - ops-agent
+  informed:
+    - po-agent
+    - dev-agent
+    - qa-agent
+    - devops-agent
+
+performance_reporting:
+  description: "Sprint summaries, DORA metrics, team productivity"
+  responsible: data-agent
+  accountable: data-agent
+  consulted:
+    - pm-agent
+    - po-agent
+  informed:
+    - dev-agent
+    - qa-agent
+    - ops-agent
+    - devops-agent
+
+cost_analysis:
+  description: "API usage costs, infrastructure costs, optimization recommendations"
+  responsible: data-agent
+  accountable: pm-agent
+  consulted:
+    - devops-agent
+    - ops-agent
+  informed:
+    - po-agent
+
+# ============================================
+# IMPROVEMENT & AUTOMATION
+# ============================================
+
+bug_mining:
+  description: "Mine bugs from logs, tickets, metrics"
+  responsible: bug-miner
+  accountable: qa-agent
+  consulted:
+    - ops-agent
+    - data-agent
+  informed:
+    - dev-agent
+    - pm-agent
+
+workflow_automation:
+  description: "Create/modify Node-RED flows for agent workflows"
+  responsible: flow-synthesizer
+  accountable: devops-agent
+  consulted:
+    - ops-agent
+  informed:
+    - pm-agent
+
+documentation_updates:
+  description: "Update and correct technical documentation"
+  responsible: doc-fixer
+  accountable: dev-agent
+  consulted:
+    - po-agent
+  informed:
+    - pm-agent
+
+prompt_optimization:
+  description: "Optimize agent prompts for cost/quality/latency"
+  responsible: prompt-tuner
+  accountable: pm-agent
+  consulted:
+    - data-agent
+  informed:
+    - dev-agent
+    - ops-agent
+
+metrics_tracking:
+  description: "Track SLOs, metrics, and costs for all agents"
+  responsible: metrics-agent
+  accountable: data-agent
+  consulted:
+    - ops-agent
+  informed:
+    - pm-agent
+    - devops-agent
+
+# ============================================
+# CROSS-FUNCTIONAL WORKFLOWS
+# ============================================
+
+agent_collaboration:
+  description: "Agent-to-agent communication, help requests, escalations"
+  responsible: "*"
+  accountable: "*"
+  consulted: []
+  informed: []
+  notes: "All agents can initiate collaboration; accountability depends on workflow context"
+
+ticket_state_transition:
+  description: "Move tickets through state machine (inbox → triage → backlog → etc.)"
+  responsible: "*"
+  accountable: "*"
+  consulted: []
+  informed: []
+  notes: "Responsible agent depends on current state; see ticket-states.yaml"
+
+end_to_end_delivery:
+  description: "Complete feature delivery from proposal to production"
+  responsible:
+    - pm-agent
+    - po-agent
+    - dev-agent
+    - qa-agent
+    - devops-agent
+    - ops-agent
+  accountable: pm-agent
+  consulted:
+    - security-agent
+    - data-agent
+    - ui-agent
+  informed: []
+  notes: "Sequential handoffs with pm-agent accountable for overall delivery"
+
+# ============================================
+# ESCALATION PATHS
+# ============================================
+
+escalations:
+  p0_incident:
+    primary: ops-agent
+    secondary: dev-agent
+    executive: pm-agent
+
+  security_breach:
+    primary: security-agent
+    secondary: ops-agent
+    executive: pm-agent
+
+  infrastructure_failure:
+    primary: devops-agent
+    secondary: ops-agent
+    executive: pm-agent
+
+  deployment_failure:
+    primary: devops-agent
+    secondary: dev-agent
+    executive: ops-agent
+
+  quality_issue:
+    primary: qa-agent
+    secondary: dev-agent
+    executive: po-agent
+
+# ============================================
+# NOTES
+# ============================================
+
+notes:
+  - "Accountable agent has final decision-making authority"
+  - "Only ONE agent should be accountable per workflow"
+  - "Responsible agents do the actual work"
+  - "Consulted agents provide input BEFORE decisions"
+  - "Informed agents are notified AFTER decisions"
+  - "Use agent-messages/ for cross-agent communication"
+  - "See TEAM.md for collaboration patterns and workflows"
+  - "See ticket-states.yaml for state transition responsibilities"

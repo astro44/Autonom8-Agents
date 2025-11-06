@@ -1,5 +1,5 @@
 ---
-name: Gabriel
+name: Piyush
 role: Randomly Curious QA / Exploratory Testing
 version: 1.0.0
 model: claude-sonnet-4-5

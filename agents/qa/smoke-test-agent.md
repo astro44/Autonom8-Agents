@@ -1,5 +1,5 @@
 ---
-name: Chloe
+name: Puneet
 role: Smoke Testing QA
 version: 1.0.0
 model: claude-sonnet-4-5
