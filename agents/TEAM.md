@@ -95,37 +95,113 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 
 ## Collaboration Patterns
 
-### Standard Feature Workflow
+### Standard Feature Workflow (Sprint-Based)
 
 ```
-User/Telegram Proposal
+Sprint Backlog (Groomed Tickets)
     ↓
-Arya (PM) - Strategic triage and prioritization
+Sprint Planning - Warren (PO)
+    ├─ Selects tickets from sprint_pre/ backlog
+    ├─ Estimates story points with Andrey (Dev)
+    └─ Commits to sprint goals
     ↓
-Warren (PO) - User stories and acceptance criteria
+Sprint Execution (2-week sprint)
     ↓
-Andrey (Dev) - Implementation
+Ticket Assignment - Warren (PO)
+    ├─ Moves ticket from sprint_pre/ → sprint_latest/assigned/
+    └─ Notifies Andrey (Dev)
     ↓
-Alex (Security) - Security review
+Development - Andrey (Dev)
+    ├─ Moves to sprint_latest/in_progress/
+    ├─ Implements feature
+    ├─ Self-review and unit tests
+    └─ Moves to sprint_latest/code_review/
     ↓
-Albert (QA) - Test planning
-    ├─ Puneet (Smoke tests)
-    ├─ Leo (Regression tests)
-    └─ Piyush (Exploratory testing)
+Security Review - Alex (Security)
+    ├─ OWASP Top 10 validation
+    ├─ Dependency scanning
+    └─ Approves or requests changes
     ↓
-Brandon (DevOps) - Deployment
+QA Testing - Albert (QA) coordinates
+    ├─ Moves to sprint_latest/testing/
+    ├─ Puneet (Smoke tests) - Critical path validation
+    ├─ Leo (Regression tests) - Full test suite
+    └─ Piyush (Exploratory) - Edge case discovery
     ↓
-Julio (Ops) - Monitoring (7 days)
+Deployment - Brandon (DevOps)
+    ├─ Moves to sprint_latest/deployment/
+    ├─ Staging deployment and validation
+    ├─ Production deployment (blue/green)
+    └─ Moves to sprint_post/
     ↓
-Done / Archive
+Post-Deployment Monitoring - Julio (Ops)
+    ├─ 7-day observation period
+    ├─ SLO compliance tracking
+    └─ Moves to sprint_deployed/ when stable
+    ↓
+Sprint Review - Warren (PO)
+    ├─ Demo to stakeholders
+    ├─ Acceptance criteria validation
+    └─ Archive ticket
 ```
+
+**Key Differences from Hotfix Flow:**
+- Starts from groomed backlog (sprint_pre/), not raw proposals
+- Includes sprint planning and estimation
+- Follows ticket state machine through sprint_latest/ subdirectories
+- Includes code review step before QA
+- Has formal sprint review and demo
+
+### Hotfix/Urgent Workflow (Bypasses Sprint)
+
+```
+User/Telegram Urgent Proposal (P0/P1)
+    ↓
+Arya (PM) - Emergency triage and priority validation
+    ↓
+Warren (PO) - Fast-track user story (< 1 hour)
+    ├─ Skips sprint planning
+    └─ Creates ticket in tickets/inbox/
+    ↓
+Andrey (Dev) - Immediate implementation
+    ├─ No backlog grooming
+    └─ Direct to production branch
+    ↓
+Alex (Security) - Expedited security review (parallel)
+    ↓
+Albert (QA) - Fast-track testing
+    ├─ Puneet (Smoke tests only) - Critical path
+    └─ Skips full regression (risk accepted)
+    ↓
+Brandon (DevOps) - Emergency deployment
+    ├─ Direct to production (no staging)
+    └─ Rollback plan ready
+    ↓
+Julio (Ops) - Intensive monitoring (24 hours)
+    ├─ SLO tracking
+    └─ Incident report
+    ↓
+Retrospective - Arya (PM) + Warren (PO)
+    └─ Create follow-up ticket for proper implementation
+```
+
+**Hotfix Characteristics:**
+- Starts from raw proposal (inbox/), not groomed backlog
+- No sprint planning or estimation
+- Minimal testing (smoke tests only)
+- Direct to production deployment
+- Creates technical debt that needs follow-up
 
 ### Incident Response Workflow
 
 ```
-Alert/Issue Detected
+Alert/Issue Detected (Production)
     ↓
 Julio (Ops) - Triage and severity assessment
+    ├─ P0: Critical (< 15 min response)
+    ├─ P1: High (< 1 hour response)
+    ├─ P2: Medium (< 4 hours response)
+    └─ P3: Low (next business day)
     ↓
 Decision Tree:
 ├─ P0/P1 + LOW complexity → Julio (Hotfix)
@@ -136,6 +212,8 @@ Decision Tree:
 Root Cause Analysis (Julio + responsible agent)
     ↓
 Post-mortem report → Sam (Data) for metrics
+    ↓
+Prevention Ticket → Warren (PO) for sprint backlog
 ```
 
 ### Infrastructure Change Workflow
