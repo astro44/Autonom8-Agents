@@ -1,8 +1,8 @@
 # Autonom8 IT Department Roster
 
-**Version:** 1.0.0
-**Last Updated:** 2025-11-06
-**Total Agents:** 19 Active
+**Version:** 1.2.0
+**Last Updated:** 2025-11-07
+**Total Agents:** 25 Active
 
 ---
 
@@ -26,10 +26,14 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 |------|------|----------|----------|----------------|
 | Senior Developer | Andrey | dev-agent | Multi (claudecode, codex, gemini, opencode) | Feature implementation, code reviews, technical execution |
 | UI/UX Engineer | Scott | ui-agent | Multi (flutter-claude, vanilla-codex, design-gemini, native-claude) | Frontend development, Flutter apps, responsive design |
+| Solana Blockchain Developer | Raj | solana-rust-agent | Claude | Solana dApps, Rust/Anchor, on-chain programs, Wormhole integration |
+| EVM Blockchain Developer | Marcus | evm-solidity-agent | Claude | EVM smart contracts, Solidity, Hardhat/Foundry, CCIP/Wormhole integration |
 
 **Specializations:**
 - **Andrey**: Full-stack development, multi-phase workflow (research → plan → code → review)
 - **Scott**: Flutter-first development, vanilla JS/CSS, Material 3, accessibility (WCAG 2.1 AA)
+- **Raj**: Solana blockchain apps, Anchor framework, PDAs, cross-chain via Wormhole
+- **Marcus**: EVM smart contracts, OpenZeppelin patterns, gas optimization, cross-chain via CCIP/Wormhole
 
 ---
 
@@ -41,12 +45,16 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Smoke Test Specialist | Puneet | smoke-test-agent | Claude | Fast critical path validation |
 | Regression Test Lead | Leo | regression-test-agent | Claude | Comprehensive regression testing |
 | Exploratory QA | Piyush | curious-qa-agent | Claude (temp: 0.9) | Creative bug hunting, edge case discovery |
+| Solana QA Engineer | Priya | solana-rust-qa-agent | Claude | Anchor testing, Wormhole integration testing, on-chain program validation |
+| EVM QA Engineer | Viktor | evm-solidity-qa-agent | Claude | Foundry/Hardhat testing, CCIP/Wormhole integration, smart contract security testing |
 
 **Testing Strategy:**
 - **Albert**: Coordinates test planning and execution across all testing phases
 - **Puneet**: Fast smoke tests for critical paths (< 5 min)
 - **Leo**: Comprehensive regression test suites
 - **Piyush**: Exploratory testing with high creativity, finds unexpected bugs
+- **Priya**: Solana on-chain testing with Anchor framework, cross-chain Wormhole validation
+- **Viktor**: EVM smart contract testing with Foundry, fuzz testing, CCIP/Wormhole cross-chain validation
 
 ---
 
@@ -69,10 +77,14 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 |------|------|----------|----------|----------------|
 | Security Engineer | Alex | security-agent | Multi (codex-code, claude-arch, gemini-compliance) | Security reviews, OWASP Top 10, compliance validation |
 | Data Engineer | Sam | data-agent | Multi (codex-etl, gemini-sql, claude-dashboards) | Analytics, ETL pipelines, dashboards, metrics reporting |
+| AI/ML Engineer | Ananya | ml-dev-agent | Multi (claude-ml-research, codex-training, gemini-optimization, opencode-deployment) | ML model development, training pipelines, MLOps, deployment |
+| AI/ML QA Engineer | Vikram | ml-qa-agent | Multi (claude-validation, codex-testing, gemini-benchmarking, opencode-monitoring) | Model validation, data quality testing, performance benchmarking, ML system monitoring |
 
-**Security & Data:**
+**Security, Data & ML:**
 - **Alex**: Shift-left security, vulnerability scanning, SOC2/HIPAA/GDPR compliance
 - **Sam**: Data-driven decision making, PM/Dev/QA/DevOps/Ops dashboards
+- **Ananya**: PyTorch/TensorFlow, model training, hyperparameter tuning, model optimization, model serving
+- **Vikram**: Model performance validation, bias/fairness testing, data drift detection, A/B testing
 
 ---
 

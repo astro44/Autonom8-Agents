@@ -4,8 +4,8 @@
 # C = Consulted (provides input before decision)
 # I = Informed (kept in the loop after decision)
 
-version: 1.0.0
-last_updated: 2025-11-06
+version: 1.2.0
+last_updated: 2025-11-07
 
 # ============================================
 # FEATURE DEVELOPMENT WORKFLOWS
@@ -34,6 +34,30 @@ ui_feature_implementation:
     - security-agent
   informed:
     - qa-agent
+    - ops-agent
+    - pm-agent
+
+solana_dapp_development:
+  description: "Solana blockchain app development (Rust/Anchor, on-chain programs)"
+  responsible: solana-rust-agent
+  accountable: po-agent
+  consulted:
+    - security-agent
+    - dev-agent
+  informed:
+    - solana-rust-qa-agent
+    - ops-agent
+    - pm-agent
+
+evm_smart_contract_development:
+  description: "EVM smart contract development (Solidity, Hardhat/Foundry)"
+  responsible: evm-solidity-agent
+  accountable: po-agent
+  consulted:
+    - security-agent
+    - dev-agent
+  informed:
+    - evm-solidity-qa-agent
     - ops-agent
     - pm-agent
 
@@ -92,6 +116,28 @@ exploratory_testing:
   informed:
     - po-agent
     - pm-agent
+
+solana_contract_testing:
+  description: "Solana on-chain program testing (Anchor framework, Wormhole integration)"
+  responsible: solana-rust-qa-agent
+  accountable: qa-agent
+  consulted:
+    - solana-rust-agent
+    - security-agent
+  informed:
+    - po-agent
+    - devops-agent
+
+evm_contract_testing:
+  description: "EVM smart contract testing (Foundry/Hardhat, CCIP/Wormhole integration)"
+  responsible: evm-solidity-qa-agent
+  accountable: qa-agent
+  consulted:
+    - evm-solidity-agent
+    - security-agent
+  informed:
+    - po-agent
+    - devops-agent
 
 # ============================================
 # SECURITY & COMPLIANCE
@@ -353,6 +399,80 @@ cost_analysis:
     - ops-agent
   informed:
     - po-agent
+
+# ============================================
+# AI/ML WORKFLOWS
+# ============================================
+
+ml_model_development:
+  description: "ML model design, training, and optimization"
+  responsible: ml-dev-agent
+  accountable: po-agent
+  consulted:
+    - data-agent
+    - dev-agent
+    - security-agent
+  informed:
+    - ml-qa-agent
+    - devops-agent
+    - pm-agent
+
+ml_model_validation:
+  description: "Model performance testing, bias testing, data quality validation"
+  responsible: ml-qa-agent
+  accountable: qa-agent
+  consulted:
+    - ml-dev-agent
+    - data-agent
+  informed:
+    - po-agent
+    - devops-agent
+    - pm-agent
+
+ml_model_deployment:
+  description: "Model serving, containerization, production deployment"
+  responsible: devops-agent
+  accountable: ops-agent
+  consulted:
+    - ml-dev-agent
+    - ml-qa-agent
+    - security-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - data-agent
+
+ml_model_monitoring:
+  description: "Production model monitoring, drift detection, performance tracking"
+  responsible: ml-qa-agent
+  accountable: ops-agent
+  consulted:
+    - ml-dev-agent
+    - data-agent
+  informed:
+    - pm-agent
+    - devops-agent
+
+ml_hyperparameter_tuning:
+  description: "Automated hyperparameter optimization and model selection"
+  responsible: ml-dev-agent
+  accountable: ml-dev-agent
+  consulted:
+    - data-agent
+  informed:
+    - ml-qa-agent
+    - pm-agent
+
+ml_data_pipeline:
+  description: "Feature engineering, data preprocessing, training data preparation"
+  responsible: data-agent
+  accountable: data-agent
+  consulted:
+    - ml-dev-agent
+    - ml-qa-agent
+  informed:
+    - pm-agent
+    - devops-agent
 
 # ============================================
 # IMPROVEMENT & AUTOMATION
