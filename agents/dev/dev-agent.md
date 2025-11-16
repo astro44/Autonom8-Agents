@@ -25,6 +25,266 @@ See `agents/_shared/messaging-instructions.md` for complete messaging guide incl
 
 ---
 
+## Sub-Agent Orchestration
+
+**IMPORTANT**: For complex multi-component tasks (full-stack features, cross-cutting changes, etc.), use sub-agent delegation to parallelize work and maintain isolated context per component.
+
+### When to Delegate to Sub-Agents
+
+Delegate when a ticket requires:
+- **Full-stack changes**: Backend (Lambda/API Gateway) + Frontend (React/Flutter) + Tests + Docs
+- **Multi-component updates**: Multiple services that must stay in sync
+- **Parallel specialization**: Different parts can be developed simultaneously by specialists
+- **Isolated context**: Each component benefits from focused codebase analysis
+
+### Claude Code: Native Sub-Agent Delegation
+
+Claude Code supports first-class sub-agents via the Task tool.
+
+**Example: Full-Stack Authentication Feature**
+
+```markdown
+This ticket requires implementing authentication across the full stack. I'll delegate to specialized sub-agents.
+
+**Step 1: Spawn Backend Sub-Agent**
+[Use Task tool]
+- subagent_type: "general-purpose"
+- Task: "Implement AWS Lambda authentication endpoints with JWT tokens. Create functions for: register, login, refresh-token, logout. Configure API Gateway routes and integration tests."
+- Context scope: backend/src/auth/, infrastructure/sam-template.yaml, tests/integration/auth/
+- Expected output: Lambda functions, API Gateway config, integration tests
+
+**Step 2: Spawn Frontend Sub-Agent (parallel)**
+[Use Task tool]
+- subagent_type: "general-purpose"
+- Task: "Implement authentication UI components with biometric support. Create LoginScreen, RegisterScreen, BiometricPrompt. Integrate with backend API. Add form validation and error handling."
+- Context scope: frontend/src/auth/, frontend/src/components/, frontend/src/state/
+- Expected output: Auth components, state management, API integration
+
+**Step 3: Spawn Integration Test Sub-Agent (parallel)**
+[Use Task tool]
+- subagent_type: "general-purpose"
+- Task: "Create end-to-end tests validating full authentication flow: registration, login, biometric, token refresh, logout. Validate frontend → API Gateway → Lambda integration."
+- Context scope: tests/e2e/, backend/auth/, frontend/auth/
+- Expected output: E2E test suite with comprehensive scenarios
+
+**Step 4: Spawn Documentation Sub-Agent (parallel)**
+[Use Task tool]
+- subagent_type: "general-purpose"
+- Task: "Update documentation for authentication: API endpoints, authentication flow diagrams, integration guide for developers, user guide for biometric setup."
+- Context scope: docs/api/, docs/guides/
+- Expected output: Updated API docs, flow diagrams, integration guide
+
+**Step 5: Coordinate Results**
+After all sub-agents complete:
+1. Review all changes for consistency
+2. Validate integration points match (API contracts, token formats)
+3. Run full integration test suite
+4. Create unified PR with all changes
+5. Update changelog and migration guide
+```
+
+### Codex/Gemini/OpenCode: Simulated Sub-Agent Delegation
+
+These providers don't have native sub-agents. Signal delegation via JSON output.
+
+**Example: Same Full-Stack Auth Feature**
+
+```json
+{
+  "delegation_required": true,
+  "main_task": "Implement user authentication with biometric support",
+  "sub_tasks": [
+    {
+      "sub_agent_id": "backend-auth-lambda",
+      "agent_type": "dev",
+      "scope": {
+        "files": [
+          "backend/src/auth/**/*.ts",
+          "infrastructure/sam-template.yaml",
+          "tests/integration/auth/**/*.ts"
+        ],
+        "focus": "AWS Lambda authentication endpoints with JWT"
+      },
+      "task": "Create Lambda functions: register, login, refresh-token, logout. Configure API Gateway routes. Add integration tests. Implement JWT token generation/validation with refresh token rotation.",
+      "expected_output": {
+        "files_created": [
+          "backend/src/auth/register.ts",
+          "backend/src/auth/login.ts",
+          "backend/src/auth/refresh.ts",
+          "backend/src/auth/logout.ts",
+          "backend/src/auth/jwt-utils.ts"
+        ],
+        "api_endpoints": [
+          "POST /auth/register",
+          "POST /auth/login",
+          "POST /auth/refresh",
+          "POST /auth/logout"
+        ],
+        "tests_created": [
+          "tests/integration/auth/register.test.ts",
+          "tests/integration/auth/login.test.ts",
+          "tests/integration/auth/refresh.test.ts"
+        ]
+      }
+    },
+    {
+      "sub_agent_id": "frontend-auth-ui",
+      "agent_type": "dev",
+      "scope": {
+        "files": [
+          "frontend/src/auth/**/*",
+          "frontend/src/components/**/*",
+          "frontend/src/state/**/*"
+        ],
+        "focus": "React/Flutter auth UI with biometric"
+      },
+      "task": "Create auth components: LoginScreen, RegisterScreen, BiometricPrompt. Implement AuthService for API integration. Add auth state management (context/store). Implement form validation, error handling, and biometric authentication.",
+      "expected_output": {
+        "components_created": [
+          "LoginScreen",
+          "RegisterScreen",
+          "BiometricPrompt",
+          "AuthForm"
+        ],
+        "state_management": "Auth context with login/logout/register actions",
+        "api_integration": "AuthService with all endpoint methods"
+      }
+    },
+    {
+      "sub_agent_id": "e2e-auth-tests",
+      "agent_type": "qa",
+      "scope": {
+        "files": [
+          "tests/e2e/**/*",
+          "backend/auth/**/*",
+          "frontend/auth/**/*"
+        ],
+        "focus": "End-to-end auth flow validation"
+      },
+      "task": "Create E2E tests: registration flow, login flow, biometric authentication, token refresh, logout. Validate frontend → API Gateway → Lambda integration. Test error scenarios (invalid credentials, expired tokens, network errors).",
+      "expected_output": {
+        "test_suites": [
+          "tests/e2e/auth/registration.spec.ts",
+          "tests/e2e/auth/login.spec.ts",
+          "tests/e2e/auth/biometric.spec.ts",
+          "tests/e2e/auth/token-refresh.spec.ts"
+        ],
+        "scenarios_covered": [
+          "Happy path registration and login",
+          "Biometric authentication flow",
+          "Token refresh on expiry",
+          "Error handling and validation"
+        ]
+      }
+    },
+    {
+      "sub_agent_id": "auth-documentation",
+      "agent_type": "dev",
+      "scope": {
+        "files": [
+          "docs/api/**/*",
+          "docs/guides/**/*"
+        ],
+        "focus": "Authentication documentation"
+      },
+      "task": "Update documentation: API endpoint specs (OpenAPI), authentication flow diagrams, developer integration guide, user guide for biometric setup. Include code examples and troubleshooting.",
+      "expected_output": {
+        "docs_updated": [
+          "docs/api/auth-endpoints.md",
+          "docs/guides/authentication-flow.md",
+          "docs/guides/biometric-setup.md"
+        ],
+        "examples_added": "Code snippets for integrating auth in new features"
+      }
+    }
+  ],
+  "coordination": {
+    "execution": "parallel",
+    "integration_points": [
+      {
+        "point": "API Contract",
+        "description": "Frontend AuthService must match backend Lambda endpoints exactly",
+        "validation": "Compare frontend API client methods with backend OpenAPI spec"
+      },
+      {
+        "point": "JWT Token Format",
+        "description": "Token structure and claims must be consistent",
+        "validation": "Verify frontend token parsing matches backend token generation"
+      },
+      {
+        "point": "Error Codes",
+        "description": "Backend error responses must be handled by frontend",
+        "validation": "Check all backend error codes have corresponding frontend handling"
+      }
+    ],
+    "validation_steps": [
+      {
+        "step": 1,
+        "action": "Run backend integration tests",
+        "success_criteria": "All Lambda functions pass integration tests"
+      },
+      {
+        "step": 2,
+        "action": "Run frontend unit tests",
+        "success_criteria": "All auth components and services pass tests"
+      },
+      {
+        "step": 3,
+        "action": "Run E2E test suite",
+        "success_criteria": "Full flow from registration to logout works"
+      },
+      {
+        "step": 4,
+        "action": "Manual biometric testing",
+        "success_criteria": "Biometric authentication works on test devices"
+      },
+      {
+        "step": 5,
+        "action": "Security review",
+        "success_criteria": "No JWT vulnerabilities, secure token storage"
+      }
+    ],
+    "rollback_plan": "If integration fails, revert all changes atomically. Auth is critical path."
+  }
+}
+```
+
+### How the Orchestrator Handles Delegation Plans
+
+For Codex/Gemini/OpenCode, the `bin/sub-agent-orchestrator.sh` script:
+
+1. **Reads delegation JSON** from agent's stdout
+2. **Validates** `delegation_required: true` flag
+3. **Spawns parallel CLI calls** for each sub-task:
+   ```bash
+   # Parallel execution
+   bin/dev-agent.sh < backend-task.json &
+   bin/qa-agent.sh < e2e-task.json &
+   bin/dev-agent.sh < frontend-task.json &
+   bin/dev-agent.sh < docs-task.json &
+   wait  # Wait for all to complete
+   ```
+4. **Aggregates results** from all sub-agents
+5. **Returns to main agent** for final coordination
+
+### Benefits of Sub-Agent Delegation
+
+1. **Parallelization**: Multiple components developed simultaneously
+2. **Isolated Context**: Each sub-agent only sees relevant files
+3. **Specialized Expertise**: Right agent type for each component (dev/qa/devops)
+4. **Reduced Token Usage**: Smaller context windows per sub-agent
+5. **Better Code Quality**: Focused attention on each component
+6. **Explicit Integration Points**: Forces clear API contracts
+
+### When NOT to Use Sub-Agents
+
+- **Simple single-file changes**: Just implement directly
+- **Tightly coupled logic**: When components can't be separated
+- **Sequential dependencies**: When each step depends on previous results
+- **Low complexity**: Delegation overhead exceeds benefit
+
+---
+
 ## DESIGN ROLE
 
 ### Persona: dev-claudecode (Design)
