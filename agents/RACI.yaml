@@ -4,8 +4,8 @@
 # C = Consulted (provides input before decision)
 # I = Informed (kept in the loop after decision)
 
-version: 1.2.0
-last_updated: 2025-11-07
+version: 1.3.0
+last_updated: 2025-12-14
 
 # ============================================
 # FEATURE DEVELOPMENT WORKFLOWS
@@ -135,6 +135,69 @@ evm_contract_testing:
   consulted:
     - evm-solidity-agent
     - security-agent
+  informed:
+    - po-agent
+    - devops-agent
+
+integration_qa_testing:
+  description: "Browser integration testing (404 detection, console errors, broken links)"
+  responsible: integration-qa-agent
+  accountable: qa-agent
+  consulted:
+    - ui-agent
+    - dev-agent
+  informed:
+    - po-agent
+    - devops-agent
+
+visual_qa_web:
+  description: "Web visual QA (Playwright DOM validation, CSS class consistency)"
+  responsible: visual-qa-web-agent
+  accountable: visual-qa-agent
+  consulted:
+    - ui-agent
+    - integration-qa-agent
+  informed:
+    - qa-agent
+    - po-agent
+
+visual_qa_flutter:
+  description: "Flutter visual QA (golden_toolkit snapshot testing, widget keys)"
+  responsible: visual-qa-flutter-agent
+  accountable: visual-qa-agent
+  consulted:
+    - ui-agent
+  informed:
+    - qa-agent
+    - po-agent
+
+visual_qa_ios:
+  description: "iOS visual QA (swift-snapshot-testing, outlet bindings)"
+  responsible: visual-qa-ios-agent
+  accountable: visual-qa-agent
+  consulted:
+    - ui-agent
+  informed:
+    - qa-agent
+    - po-agent
+
+backend_qa_testing:
+  description: "Backend QA (Lambda, Docker, gRPC unit/integration testing)"
+  responsible: backend-qa-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+    - devops-agent
+  informed:
+    - po-agent
+
+data_qa_testing:
+  description: "Data QA (schema validation, migration testing, rollback verification)"
+  responsible: data-qa-agent
+  accountable: qa-agent
+  consulted:
+    - data-agent
+    - dev-agent
   informed:
     - po-agent
     - devops-agent
@@ -528,6 +591,83 @@ metrics_tracking:
     - devops-agent
 
 # ============================================
+# CORE AGENTS & ENFORCEMENT
+# ============================================
+
+artifact_validation:
+  description: "Validate paired artifacts (JS/CSS, Dart/Theme, Swift/Storyboard)"
+  responsible: catalog-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+    - ui-agent
+  informed:
+    - po-agent
+  notes: "Automatic validation triggered post-implementation"
+
+catalog_generation:
+  description: "Generate CATALOG.md with dependency tracking and validation status"
+  responsible: catalog-agent
+  accountable: catalog-agent
+  consulted:
+    - dev-agent
+  informed:
+    - pm-agent
+    - po-agent
+    - qa-agent
+
+ticket_decomposition:
+  description: "Validate ticket decomposition, identify cross-ticket dependencies"
+  responsible: decomposition-challenger-agent
+  accountable: po-agent
+  consulted:
+    - pm-agent
+    - dev-agent
+  informed:
+    - qa-agent
+
+ticket_normalization:
+  description: "Standardize ticket formats, validate schema compliance"
+  responsible: normalizer-agent
+  accountable: po-agent
+  consulted:
+    - pm-agent
+  informed:
+    - dev-agent
+    - qa-agent
+
+context_preservation:
+  description: "Maintain conversation context across agent handoffs"
+  responsible: context-keeper-agent
+  accountable: context-keeper-agent
+  consulted: []
+  informed:
+    - dev-agent
+    - qa-agent
+  notes: "Automatic context management for long-running tasks"
+
+visual_consistency_check:
+  description: "Validate UI element dimension consistency (variance detection)"
+  responsible: visual-qa-agent
+  accountable: qa-agent
+  consulted:
+    - ui-agent
+  informed:
+    - dev-agent
+    - po-agent
+  notes: "Triggers bug tickets for variance > 25%"
+
+stub_detection:
+  description: "Detect incomplete artifacts (TODO comments, throw statements)"
+  responsible: catalog-agent
+  accountable: qa-agent
+  consulted:
+    - dev-agent
+  informed:
+    - po-agent
+  notes: "Blocks progression if stub files detected"
+
+# ============================================
 # CROSS-FUNCTIONAL WORKFLOWS
 # ============================================
 
@@ -594,6 +734,26 @@ escalations:
     secondary: dev-agent
     executive: po-agent
 
+  artifact_validation_failure:
+    primary: catalog-agent
+    secondary: dev-agent
+    executive: qa-agent
+
+  visual_consistency_issue:
+    primary: visual-qa-agent
+    secondary: ui-agent
+    executive: qa-agent
+
+  missing_companion_file:
+    primary: dev-agent
+    secondary: catalog-agent
+    executive: po-agent
+
+  ticket_decomposition_blocked:
+    primary: decomposition-challenger-agent
+    secondary: po-agent
+    executive: pm-agent
+
 # ============================================
 # NOTES
 # ============================================
@@ -607,3 +767,8 @@ notes:
   - "Use agent-messages/ for cross-agent communication"
   - "See TEAM.md for collaboration patterns and workflows"
   - "See ticket-states.yaml for state transition responsibilities"
+  - "Enforcement pipeline runs automatically at workflow trigger points"
+  - "15 platform validators: web, flutter, ios, android, terraform, backend, data, solidity, solana, ai"
+  - "Visual consistency threshold: 5% warning, 25% error (creates bug ticket)"
+  - "Artifact validation runs post-implementation, blocks progression on failure"
+  - "Catalog agent tracks all files_created with identifiers and companions"

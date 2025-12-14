@@ -1,8 +1,8 @@
 # Autonom8 IT Department Roster
 
-**Version:** 1.2.0
-**Last Updated:** 2025-11-07
-**Total Agents:** 25 Active
+**Version:** 1.3.0
+**Last Updated:** 2025-12-14
+**Total Agents:** 32 Active
 
 ---
 
@@ -45,14 +45,28 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Smoke Test Specialist | Puneet | smoke-test-agent | Claude | Fast critical path validation |
 | Regression Test Lead | Leo | regression-test-agent | Claude | Comprehensive regression testing |
 | Exploratory QA | Piyush | curious-qa-agent | Claude (temp: 0.9) | Creative bug hunting, edge case discovery |
-| Solana QA Engineer | Priya | solana-rust-qa-agent | Claude | Anchor testing, Wormhole integration testing, on-chain program validation |
-| EVM QA Engineer | Viktor | evm-solidity-qa-agent | Claude | Foundry/Hardhat testing, CCIP/Wormhole integration, smart contract security testing |
+| Integration QA Lead | Nina | integration-qa-agent | Multi | Browser testing, 404 detection, console error capture |
+| Visual QA Lead | Vera | visual-qa-agent | Multi | Tech-agnostic visual QA principles and coordination |
+| Visual QA Web | Maya | visual-qa-web-agent | Multi | Playwright DOM validation, CSS class consistency |
+| Visual QA Flutter | Priti | visual-qa-flutter-agent | Multi | Flutter golden_toolkit snapshot testing |
+| Visual QA iOS | Kira | visual-qa-ios-agent | Multi | iOS swift-snapshot-testing |
+| Backend QA Engineer | Felix | backend-qa-agent | Multi | Lambda, Docker, gRPC unit/integration testing |
+| Data QA Engineer | Daria | data-qa-agent | Multi | Schema validation, migration testing, rollback verification |
+| Solana QA Engineer | Priya | solana-rust-qa-agent | Claude | Anchor testing, Wormhole integration testing |
+| EVM QA Engineer | Viktor | evm-solidity-qa-agent | Claude | Foundry/Hardhat testing, CCIP/Wormhole integration |
 
 **Testing Strategy:**
 - **Albert**: Coordinates test planning and execution across all testing phases
 - **Puneet**: Fast smoke tests for critical paths (< 5 min)
 - **Leo**: Comprehensive regression test suites
 - **Piyush**: Exploratory testing with high creativity, finds unexpected bugs
+- **Nina**: Browser integration tests - catches 404s, console errors, broken links
+- **Vera**: Visual QA coordination - tech-agnostic principles for all platforms
+- **Maya**: Web visual testing with Playwright - CSS class validation, DOM consistency
+- **Priti**: Flutter visual testing with golden_toolkit - widget key validation
+- **Kira**: iOS visual testing with swift-snapshot-testing - outlet bindings
+- **Felix**: Backend testing - Lambda handlers, Docker services, gRPC endpoints
+- **Daria**: Data pipeline testing - schema validation, migration verification
 - **Priya**: Solana on-chain testing with Anchor framework, cross-chain Wormhole validation
 - **Viktor**: EVM smart contract testing with Foundry, fuzz testing, CCIP/Wormhole cross-chain validation
 
@@ -105,6 +119,29 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 
 ---
 
+## Core Agents & Enforcement
+
+| Role | Name | Agent ID | Provider | Responsibility |
+|------|------|----------|----------|----------------|
+| Catalog Manager | Cleo | catalog-agent | Multi | Generates CATALOG.md with dependency tracking and validation status |
+| Decomposition Challenger | Drake | decomposition-challenger-agent | Multi | Challenges non-decomposed tickets, identifies cross-ticket dependencies |
+| Normalizer | Norm | normalizer-agent | Multi | Standardizes ticket formats, validates schema compliance |
+| Context Keeper | Cortex | context-keeper-agent | Multi | Maintains conversation context, manages agent memory |
+
+**Enforcement Pipeline:**
+- **Cleo**: Tracks all created artifacts with identifiers, companions, and validation status
+- **Drake**: Ensures tickets are properly decomposed before sprint execution
+- **Norm**: Enforces consistent ticket structure across all agents
+- **Cortex**: Preserves context across agent handoffs and long-running tasks
+
+**Artifact Validation (go-autonom8/validation/):**
+- **15 Platform Validators**: web, flutter, ios, android, terraform, backend, data, solidity, solana, ai
+- **Paired Artifact Detection**: JS/CSS, Dart/Theme, Swift/Storyboard, Kotlin/Layout
+- **Visual Consistency Checking**: Dimension variance detection across UI elements
+- **Workflow Triggers**: Pre/post validation at each sprint phase
+
+---
+
 ## Collaboration Patterns
 
 ### Standard Feature Workflow (Sprint-Based)
@@ -116,6 +153,11 @@ Sprint Planning - Warren (PO)
     ├─ Selects tickets from sprint_pre/ backlog
     ├─ Estimates story points with Andrey (Dev)
     └─ Commits to sprint goals
+    ↓
+Decomposition Check - Drake (Decomposition Challenger)
+    ├─ Validates ticket is properly decomposed
+    ├─ Identifies cross-ticket dependencies
+    └─ Blocks oversized tickets
     ↓
 Sprint Execution (2-week sprint)
     ↓
@@ -129,6 +171,11 @@ Development - Andrey (Dev)
     ├─ Self-review and unit tests
     └─ Moves to sprint_latest/code_review/
     ↓
+Artifact Validation - Enforcement Pipeline [AUTOMATIC]
+    ├─ Validates paired artifacts (JS/CSS, etc.)
+    ├─ Detects stub files and incomplete code
+    └─ Extracts identifiers for catalog tracking
+    ↓
 Security Review - Alex (Security)
     ├─ OWASP Top 10 validation
     ├─ Dependency scanning
@@ -140,11 +187,32 @@ QA Testing - Albert (QA) coordinates
     ├─ Leo (Regression tests) - Full test suite
     └─ Piyush (Exploratory) - Edge case discovery
     ↓
+Integration QA - Nina (Integration QA) [UI PLATFORMS]
+    ├─ Browser testing with Playwright
+    ├─ 404 detection, console error capture
+    └─ Broken link validation
+    ↓
+Visual QA - Vera coordinates [UI PLATFORMS]
+    ├─ Maya (Web) - CSS class consistency
+    ├─ Priti (Flutter) - Widget key validation
+    └─ Kira (iOS) - Outlet bindings
+    ↓
+Visual Consistency Check - Enforcement Pipeline [AUTOMATIC]
+    ├─ Validates element dimension consistency
+    ├─ Reports variance > 5% as warnings
+    └─ Creates bug tickets for severe issues (> 25%)
+    ↓
 Deployment - Brandon (DevOps)
     ├─ Moves to sprint_latest/deployment/
     ├─ Staging deployment and validation
     ├─ Production deployment (blue/green)
     └─ Moves to sprint_post/
+    ↓
+Catalog Update - Cleo (Catalog Agent) [AUTOMATIC]
+    ├─ Records files_created with identifiers
+    ├─ Tracks companion file relationships
+    ├─ Updates CATALOG.md with validation status
+    └─ Generates dependency graph
     ↓
 Post-Deployment Monitoring - Julio (Ops)
     ├─ 7-day observation period
@@ -291,6 +359,9 @@ Brandon (DevOps) - Frontend deployment
 5. **Observability**: All agent actions logged, metrics tracked, dashboards generated
 6. **Security-First**: Security reviews integrated into development workflow
 7. **Data-Driven**: Analytics and metrics inform all decisions
+8. **Enforcement Pipeline**: Automatic validation at each workflow phase (artifact pairing, stub detection, visual consistency)
+9. **Dependency Tracking**: All artifacts tracked with identifiers, companions, and validation status
+10. **Platform-Specific Validation**: 15 validators covering web, mobile, blockchain, backend, data, and AI platforms
 
 ---
 
