@@ -20,6 +20,7 @@ All agents listed here are available to all providers unless overridden.
 | security-agent | `agents/security/security-agent.md` | Security reviews, vulnerability scanning, compliance validation | ✅ Active |
 | data-agent | `agents/data/data-agent.md` | Analytics, ETL pipelines, dashboards, metrics reporting | ✅ Active |
 | ui-agent | `agents/ui/ui-agent.md` | UI/UX design and implementation - Flutter, React, responsive design | ✅ Active |
+| design-strategist-agent | `agents/ux/design-strategist-agent.md` | Proactive UX architecture at inception - shapes design BEFORE implementation (UI platforms only) | ✅ Active |
 | bug-miner | `agents/improvement/bug-miner.md` | Mines bugs and issues from logs/tickets/metrics | ✅ Active |
 | flow-synthesizer | `agents/improvement/flow-synthesizer.md` | Creates/modifies Node-RED flows | ✅ Active |
 | doc-fixer | `agents/improvement/doc-fixer.md` | Updates and corrects documentation | ✅ Active |
@@ -28,7 +29,18 @@ All agents listed here are available to all providers unless overridden.
 | smoke-test-agent | `agents/qa/smoke-test-agent.md` | Fast smoke tests for critical paths | ✅ Active |
 | regression-test-agent | `agents/qa/regression-test-agent.md` | Comprehensive regression testing | ✅ Active |
 | curious-qa-agent | `agents/qa/curious-qa-agent.md` | Exploratory testing - finds unexpected bugs | ✅ Active |
+| integration-qa-agent | `agents/qa/integration-qa-agent.md` | Browser integration testing - catches 404s, console errors | ✅ Active |
+| visual-qa-agent | `agents/qa/visual-qa-agent.md` | Visual QA base agent - tech-agnostic principles | ✅ Active |
+| visual-qa-web-agent | `agents/qa/visual-qa-web-agent.md` | Visual QA for HTML/CSS/JS - Playwright, DOM validation | ✅ Active |
+| visual-qa-flutter-agent | `agents/qa/visual-qa-flutter-agent.md` | Visual QA for Flutter - golden_toolkit snapshot testing | ✅ Active |
+| visual-qa-ios-agent | `agents/qa/visual-qa-ios-agent.md` | Visual QA for iOS - swift-snapshot-testing | ✅ Active |
+| backend-qa-agent | `agents/qa/backend-qa-agent.md` | Backend QA for Lambda, Docker, gRPC - unit/integration testing | ✅ Active |
+| data-qa-agent | `agents/qa/data-qa-agent.md` | Data QA for migrations, DynamoDB - schema/rollback validation | ✅ Active |
+| performance-qa-agent | `agents/qa/performance-qa-agent.md` | Performance QA - Core Web Vitals, bundle size budgets, resource counting | ✅ Active |
+| ui-test-gen-agent | `agents/qa/ui-test-gen-agent.md` | UI test scaffolding - generates Playwright specs and fixtures for UI components | ✅ Active |
 | devops-agent | `agents/devops/devops-agent.md` | Infrastructure, deployment, monitoring, incident response, RCA | ✅ Active |
+| decomposition-challenger-agent | `agents/core/decomposition-challenger-agent.md` | Challenges non-decomposed tickets, identifies cross-ticket dependencies | ✅ Active |
+| catalog-agent | `agents/core/catalog-agent.md` | Generates src/CATALOG.md from deployed ticket files_created metadata | ✅ Active |
 | monitor-agent | `agents/core/monitor-agent.md` | Observes systems and pipelines | 📋 Planned |
 | analyst-agent | `agents/core/analyst-agent.md` | Triages events and performs root-cause analysis | 📋 Planned |
 | reviewer-agent | `agents/core/reviewer-agent.md` | Validates fixes and ensures policy compliance | 📋 Planned |
@@ -97,5 +109,5 @@ Each provider has a manifest symlink that points to this canonical file:
 
 ---
 
-**Last Updated:** 2025-11-06
+**Last Updated:** 2025-12-18
 **Maintainer:** Autonom8 Core Team

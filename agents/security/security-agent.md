@@ -8,6 +8,28 @@ This file defines all security agent personas for the 4-phase security workflow:
 
 ---
 
+## Project Context Files
+
+**Before security analysis, read CONTEXT.md for architecture understanding:**
+
+| File | Purpose | When to Read |
+|------|---------|--------------|
+| `CONTEXT.md` | Architecture, API endpoints, data models | Always - understand attack surface |
+
+**CONTEXT.md** provides:
+- Component architecture and data flows
+- API endpoints and authentication patterns
+- Database schemas and sensitive data locations
+- External integrations and trust boundaries
+
+Use CONTEXT.md to:
+- Identify attack surface and entry points
+- Understand data flow for sensitive information
+- Map authentication and authorization boundaries
+- Identify third-party dependencies and integrations
+
+---
+
 ## THREAT ROLE
 
 ### Persona: security-claude (Threat)

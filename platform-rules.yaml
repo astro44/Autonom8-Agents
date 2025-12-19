@@ -1,0 +1,1059 @@
+# Platform-Specific Artifact Pairing Rules
+# Version: 1.0.0
+# Purpose: Define paired artifact requirements for each platform to ensure
+#          functional artifacts have their required companion artifacts.
+#
+# This file is the source of truth for artifact completeness validation
+# used by integration-qa-agent, visual-qa-agent, and ui-agent.
+
+version: "1.0"
+
+# Universal Principle: Paired Artifact Completeness
+# Every functional artifact must have its companion artifacts present and complete.
+# Missing companions result in invisible, broken, or incomplete functionality.
+
+platforms:
+
+  # ============================================================================
+  # WEB (HTML/CSS/JS)
+  # ============================================================================
+  web:
+    description: "Web frontend - HTML, CSS, JavaScript"
+    artifact_pairs:
+      - primary:
+          type: "js_component"
+          patterns: ["src/components/**/*.js", "src/js/**/*.js"]
+          description: "JavaScript component that creates DOM elements with class names"
+        companion:
+          type: "css_styles"
+          patterns: ["src/styles/**/*.css", "src/css/**/*.css"]
+          description: "CSS file with styles for the component's class names"
+        validation:
+          method: "class_reference_check"
+          description: "Extract class names from JS createElement/className assignments, verify CSS rules exist"
+
+      - primary:
+          type: "html_page"
+          patterns: ["src/pages/**/*.html", "src/**/*.html"]
+          description: "HTML entry point referencing scripts and stylesheets"
+        companion:
+          type: "referenced_assets"
+          patterns: ["<script src>", "<link href>", "url()"]
+          description: "All assets referenced via script tags, link tags, or CSS url()"
+        validation:
+          method: "path_resolution_check"
+          description: "Verify all referenced paths resolve to existing files"
+
+      - primary:
+          type: "asset_reference"
+          patterns: ["src/**/*.html", "src/**/*.js", "src/**/*.css"]
+          description: "Code referencing images, fonts, or other static assets"
+        companion:
+          type: "asset_files"
+          patterns: ["src/images/**/*", "src/assets/**/*", "public/**/*"]
+          description: "Static asset files (images, fonts, icons)"
+        validation:
+          method: "asset_path_check"
+          description: "Extract src/href/url() paths, verify files exist at referenced locations"
+
+      - primary:
+          type: "navigation_code"
+          patterns: ["src/**/*.js", "src/**/*.html"]
+          description: "Code with internal links/navigation (href, router.push, window.location)"
+        companion:
+          type: "route_handlers"
+          patterns: ["src/pages/**/*", "src/routes/**/*"]
+          description: "Route definitions or page files"
+        validation:
+          method: "route_coverage_check"
+          description: "Extract internal links, verify route/page exists for each"
+
+      - primary:
+          type: "env_reference"
+          patterns: ["src/**/*.js"]
+          description: "Code using environment variables (process.env.*, import.meta.env.*)"
+        companion:
+          type: "env_definition"
+          patterns: [".env", ".env.example", ".env.production"]
+          description: "Environment variable definitions"
+        validation:
+          method: "env_var_check"
+          description: "Extract env var names from code, verify defined in env files"
+
+    output_validation:
+      - check: "render_visibility"
+        description: "Elements created by JS must be visible (non-zero dimensions)"
+        method: "dom_bounding_rect_check"
+      - check: "style_application"
+        description: "Classes assigned in JS must have corresponding CSS rules"
+        method: "computed_style_check"
+      - check: "console_clean"
+        description: "No errors or warnings in browser console"
+        method: "console_capture"
+
+  # ============================================================================
+  # FLUTTER
+  # ============================================================================
+  flutter:
+    description: "Flutter/Dart cross-platform UI"
+    artifact_pairs:
+      - primary:
+          type: "widget"
+          patterns: ["lib/**/*.dart"]
+          description: "Flutter widget using theme or style references"
+        companion:
+          type: "theme_data"
+          patterns: ["lib/theme/**/*.dart", "lib/styles/**/*.dart"]
+          description: "ThemeData or style definitions"
+        validation:
+          method: "theme_reference_check"
+          description: "Verify Theme.of(context) references resolve to defined theme values"
+
+      - primary:
+          type: "asset_reference"
+          patterns: ["lib/**/*.dart"]
+          description: "Dart code referencing assets"
+        companion:
+          type: "pubspec_assets"
+          patterns: ["pubspec.yaml"]
+          description: "Assets declared in pubspec.yaml"
+        validation:
+          method: "asset_declaration_check"
+          description: "Verify all asset paths in code are declared in pubspec.yaml and files exist"
+
+      - primary:
+          type: "navigation_code"
+          patterns: ["lib/**/*.dart"]
+          description: "Dart code with navigation (Navigator.push, GoRouter, AutoRoute)"
+        companion:
+          type: "route_definitions"
+          patterns: ["lib/routes/**/*.dart", "lib/router/**/*.dart"]
+          description: "Route definitions or page files"
+        validation:
+          method: "route_coverage_check"
+          description: "Extract named routes, verify route definitions exist"
+
+      - primary:
+          type: "env_reference"
+          patterns: ["lib/**/*.dart"]
+          description: "Dart code using environment variables (dotenv, --dart-define)"
+        companion:
+          type: "env_definition"
+          patterns: [".env", ".env.example", "env/*.env"]
+          description: "Environment variable definitions"
+        validation:
+          method: "env_var_check"
+          description: "Extract env var names from code, verify defined in env files"
+
+    output_validation:
+      - check: "widget_render"
+        description: "Widgets must render without RenderBox errors"
+        method: "widget_test_render"
+      - check: "theme_resolution"
+        description: "All Theme.of(context) calls must resolve to valid values"
+        method: "theme_validation_test"
+      - check: "golden_comparison"
+        description: "Visual output matches golden files"
+        method: "golden_test"
+
+  # ============================================================================
+  # iOS (Swift/SwiftUI)
+  # ============================================================================
+  ios:
+    description: "iOS native - Swift, SwiftUI, UIKit"
+    artifact_pairs:
+      - primary:
+          type: "view"
+          patterns: ["**/*.swift"]
+          description: "SwiftUI View or UIKit ViewController"
+        companion:
+          type: "assets"
+          patterns: ["Assets.xcassets/**/*"]
+          description: "Asset catalog entries"
+        validation:
+          method: "asset_catalog_check"
+          description: "Verify Image() and UIImage(named:) references exist in asset catalog"
+
+      - primary:
+          type: "localization_code"
+          patterns: ["**/*.swift"]
+          description: "Swift code using NSLocalizedString or String(localized:)"
+        companion:
+          type: "strings_files"
+          patterns: ["*.lproj/Localizable.strings", "*.lproj/*.strings"]
+          description: "Localization strings files"
+        validation:
+          method: "strings_key_check"
+          description: "Verify all localization keys exist in strings files"
+
+      - primary:
+          type: "storyboard"
+          patterns: ["**/*.storyboard", "**/*.xib"]
+          description: "Interface Builder files"
+        companion:
+          type: "outlet_connections"
+          patterns: ["**/*.swift"]
+          description: "Swift files with @IBOutlet connections"
+        validation:
+          method: "outlet_binding_check"
+          description: "Verify all storyboard outlets have corresponding Swift declarations"
+
+      - primary:
+          type: "navigation_code"
+          patterns: ["**/*.swift"]
+          description: "Swift code with navigation (pushViewController, present, segue)"
+        companion:
+          type: "view_controllers"
+          patterns: ["**/*.swift", "**/*.storyboard"]
+          description: "ViewController or storyboard definitions"
+        validation:
+          method: "segue_coverage_check"
+          description: "Extract segue identifiers and VC references, verify definitions exist"
+
+      - primary:
+          type: "env_reference"
+          patterns: ["**/*.swift", "**/*.plist"]
+          description: "Swift code using Info.plist keys or environment variables"
+        companion:
+          type: "plist_definition"
+          patterns: ["Info.plist", "*.xcconfig"]
+          description: "Info.plist or xcconfig files with env definitions"
+        validation:
+          method: "plist_key_check"
+          description: "Extract Bundle.main.infoDictionary keys, verify exist in plist"
+
+    output_validation:
+      - check: "view_render"
+        description: "Views must render without constraint warnings"
+        method: "ui_test_render"
+      - check: "accessibility"
+        description: "All interactive elements have accessibility labels"
+        method: "accessibility_audit"
+
+  # ============================================================================
+  # ANDROID (Kotlin/Jetpack Compose)
+  # ============================================================================
+  android:
+    description: "Android native - Kotlin, Jetpack Compose, XML layouts"
+    artifact_pairs:
+      - primary:
+          type: "composable"
+          patterns: ["**/*.kt"]
+          description: "Jetpack Compose composable functions"
+        companion:
+          type: "theme"
+          patterns: ["**/theme/*.kt", "**/ui/theme/*.kt"]
+          description: "Material theme definitions"
+        validation:
+          method: "theme_reference_check"
+          description: "Verify MaterialTheme references resolve to theme values"
+
+      - primary:
+          type: "resource_reference"
+          patterns: ["**/*.kt", "**/*.xml"]
+          description: "Code referencing R.drawable, R.string, etc."
+        companion:
+          type: "resources"
+          patterns: ["res/**/*"]
+          description: "Android resource files"
+        validation:
+          method: "resource_id_check"
+          description: "Verify all R.* references have corresponding resources"
+
+      - primary:
+          type: "xml_layout"
+          patterns: ["res/layout/**/*.xml"]
+          description: "XML layout files"
+        companion:
+          type: "binding_class"
+          patterns: ["**/*.kt"]
+          description: "ViewBinding or DataBinding usage"
+        validation:
+          method: "binding_check"
+          description: "Verify layout IDs match binding references"
+
+      - primary:
+          type: "navigation_code"
+          patterns: ["**/*.kt"]
+          description: "Kotlin code with navigation (NavController, Intent, startActivity)"
+        companion:
+          type: "nav_graph"
+          patterns: ["res/navigation/**/*.xml", "**/*.kt"]
+          description: "Navigation graph or Activity/Fragment definitions"
+        validation:
+          method: "nav_destination_check"
+          description: "Extract navigation destinations, verify they exist"
+
+      - primary:
+          type: "env_reference"
+          patterns: ["**/*.kt", "build.gradle*"]
+          description: "Kotlin code using BuildConfig fields or environment variables"
+        companion:
+          type: "build_config"
+          patterns: ["build.gradle", "build.gradle.kts", "local.properties"]
+          description: "Build config or properties files"
+        validation:
+          method: "build_config_check"
+          description: "Extract BuildConfig.* references, verify defined in gradle"
+
+    output_validation:
+      - check: "compose_preview"
+        description: "Composables render in preview without errors"
+        method: "compose_preview_test"
+      - check: "layout_render"
+        description: "XML layouts inflate without errors"
+        method: "layout_inflation_test"
+
+  # ============================================================================
+  # SOLIDITY (Ethereum Smart Contracts)
+  # ============================================================================
+  solidity:
+    description: "Ethereum smart contracts - Solidity"
+    artifact_pairs:
+      - primary:
+          type: "contract"
+          patterns: ["contracts/**/*.sol"]
+          description: "Solidity smart contract source"
+        companion:
+          type: "abi"
+          patterns: ["artifacts/**/*.json", "abi/**/*.json"]
+          description: "Generated ABI JSON"
+        validation:
+          method: "abi_generation_check"
+          description: "Verify compiled ABI exists and matches contract interface"
+
+      - primary:
+          type: "contract"
+          patterns: ["contracts/**/*.sol"]
+          description: "Smart contract requiring deployment"
+        companion:
+          type: "deployment_script"
+          patterns: ["scripts/deploy*.js", "deploy/**/*.js"]
+          description: "Deployment script for the contract"
+        validation:
+          method: "deployment_coverage_check"
+          description: "Verify deployment script handles the contract"
+
+      - primary:
+          type: "contract"
+          patterns: ["contracts/**/*.sol"]
+          description: "Smart contract"
+        companion:
+          type: "test_file"
+          patterns: ["test/**/*.js", "test/**/*.ts"]
+          description: "Test file for the contract"
+        validation:
+          method: "test_coverage_check"
+          description: "Verify test file exists and covers contract functions"
+
+    output_validation:
+      - check: "compilation"
+        description: "Contract compiles without errors"
+        method: "solc_compile"
+      - check: "test_pass"
+        description: "All contract tests pass"
+        method: "hardhat_test"
+
+  # ============================================================================
+  # NODE-RED
+  # ============================================================================
+  nodered:
+    description: "Node-RED flow-based programming"
+    artifact_pairs:
+      - primary:
+          type: "flow"
+          patterns: ["flows/**/*.json", "*.json"]
+          description: "Node-RED flow definition"
+        companion:
+          type: "credentials"
+          patterns: ["*_cred.json", "credentials.json"]
+          description: "Encrypted credentials file (if required)"
+        validation:
+          method: "credential_reference_check"
+          description: "Verify nodes requiring credentials have credential entries"
+
+      - primary:
+          type: "function_node"
+          patterns: ["flows/**/*.json"]
+          description: "Function nodes with code"
+        companion:
+          type: "external_modules"
+          patterns: ["package.json"]
+          description: "NPM modules required by function nodes"
+        validation:
+          method: "require_check"
+          description: "Verify require() calls in function nodes have package.json entries"
+
+    output_validation:
+      - check: "flow_deploy"
+        description: "Flow deploys without errors"
+        method: "deploy_check"
+      - check: "node_availability"
+        description: "All required node types are installed"
+        method: "node_type_check"
+
+# ============================================================================
+# SILENT SPEC VIOLATIONS
+# Code that violates language/platform specs but doesn't error at runtime.
+# These are "gotchas" that silently produce wrong behavior.
+# ============================================================================
+silent_spec_violations:
+
+  web:
+    - name: "css_import_after_rules"
+      description: "CSS @import statements after any CSS rules are silently ignored"
+      pattern: |
+        # CSS spec: @import must come before any rules (except @charset)
+        # If rules appear before @import, the import is ignored
+      detection:
+        method: "verify_imports_before_rules"
+        file_patterns: ["**/*.css"]
+      severity: "CRITICAL"
+      auto_fixable: true
+      fix_action: "Move all @import statements to top of file, before any CSS rules"
+
+    - name: "js_textcontent_destroys_children"
+      description: "Setting textContent on element with children destroys all child nodes"
+      pattern: |
+        # element.textContent = "..." destroys all child elements
+        # element.innerText = "..." also destroys children
+        # If element has structured content (spans, divs), this wipes it
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.js", "**/*.ts"]
+        check: "warn_textcontent_on_parent"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Target specific child element or use innerHTML with escaping"
+
+    - name: "async_script_execution_order"
+      description: "Scripts with async attribute may execute out of order"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.html"]
+        pattern: '<script[^>]+async[^>]+>'
+        context: "multiple_async_scripts_with_dependencies"
+      severity: "MEDIUM"
+      auto_fixable: false
+      fix_action: "Use defer for dependency order, or module type with imports"
+
+  go:
+    - name: "defer_in_loop"
+      description: "defer in loop captures same variable, may cause resource leaks"
+      pattern: |
+        # for i := range items {
+        #   f := openFile(items[i])
+        #   defer f.Close()  // All defers run at function end, not loop iteration
+        # }
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.go"]
+        check: "defer_inside_for_loop"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Move defer to separate function or use explicit cleanup"
+
+    - name: "slice_append_reuse"
+      description: "append() may reuse underlying array, causing data races"
+      pattern: |
+        # slice1 := originalSlice[:5]
+        # slice2 := append(slice1, value)  // May modify originalSlice
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.go"]
+        check: "append_to_subslice"
+      severity: "MEDIUM"
+      auto_fixable: false
+      fix_action: "Use explicit copy() before append to subslice"
+
+    - name: "nil_map_write"
+      description: "Writing to nil map causes panic at runtime"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.go"]
+        check: "map_write_without_make"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Initialize map with make() before writing"
+
+  python:
+    - name: "mutable_default_argument"
+      description: "Mutable default argument (list, dict) is shared across calls"
+      pattern: |
+        # def foo(items=[]):  # Same list reused across all calls!
+        #   items.append(1)
+        #   return items
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.py"]
+        check: "mutable_default_in_function_def"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Use None as default, initialize inside function"
+
+    - name: "late_binding_closure"
+      description: "Loop variable captured by closure uses final value"
+      pattern: |
+        # funcs = [lambda: i for i in range(3)]
+        # funcs[0]()  # Returns 2, not 0!
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.py"]
+        check: "lambda_captures_loop_var"
+      severity: "MEDIUM"
+      auto_fixable: true
+      fix_action: "Use default argument to capture value: lambda i=i: i"
+
+    - name: "circular_import"
+      description: "Circular imports may silently fail or return incomplete modules"
+      detection:
+        method: "import_graph_analysis"
+        file_patterns: ["**/*.py"]
+        check: "detect_import_cycles"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Restructure imports, use local imports, or merge modules"
+
+  solidity:
+    - name: "unchecked_external_call"
+      description: "External call return value not checked, may silently fail"
+      pattern: |
+        # someContract.call{value: amount}("");  // Return value ignored!
+        # (bool success, ) = addr.call(...);     // success not checked
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.sol"]
+        pattern: '\\.call\{[^}]*\}\([^)]*\)(?!\s*;?\s*require)'
+      severity: "CRITICAL"
+      auto_fixable: true
+      fix_action: "Check return value: require(success, 'call failed')"
+
+    - name: "storage_memory_confusion"
+      description: "Storage vs memory semantics can cause unexpected overwrites"
+      pattern: |
+        # MyStruct storage s = structArray[0];
+        # s.value = 1;  // Modifies storage!
+        # vs
+        # MyStruct memory m = structArray[0];
+        # m.value = 1;  // Does NOT modify storage
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.sol"]
+        check: "storage_memory_assignment"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Explicitly use storage or memory keyword with intent"
+
+    - name: "reentrancy_pattern"
+      description: "State changes after external call enable reentrancy attacks"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.sol"]
+        check: "state_change_after_external_call"
+      severity: "CRITICAL"
+      auto_fixable: false
+      fix_action: "Use checks-effects-interactions pattern or ReentrancyGuard"
+
+  terraform:
+    - name: "deprecated_syntax"
+      description: "Deprecated HCL syntax still works but may break in future versions"
+      detection:
+        method: "terraform_validate"
+        file_patterns: ["**/*.tf"]
+        check: "parse_deprecation_warnings"
+      severity: "MEDIUM"
+      auto_fixable: true
+      fix_action: "Update to current HCL syntax"
+
+    - name: "count_index_in_for_each"
+      description: "Using count with resources that need stable identifiers"
+      pattern: |
+        # count = length(var.items)  # Changing order recreates resources!
+        # Better: for_each = toset(var.items)
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.tf"]
+        check: "count_on_stateful_resource"
+      severity: "MEDIUM"
+      auto_fixable: false
+      fix_action: "Use for_each with stable keys instead of count"
+
+    - name: "hardcoded_provider_version"
+      description: "Missing version constraint may pull breaking changes"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.tf"]
+        pattern: 'provider\s*"[^"]+"\s*\{\s*[^}]*(?!version)[^}]*\}'
+      severity: "LOW"
+      auto_fixable: true
+      fix_action: "Add version constraint: version = '~> x.y'"
+
+  java:
+    - name: "null_autoboxing"
+      description: "Unboxing null wrapper to primitive causes NullPointerException"
+      pattern: |
+        # Integer i = null;
+        # int x = i;  // NPE at runtime!
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.java"]
+        check: "null_unboxing"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Check for null before unboxing, or use Optional"
+
+    - name: "string_equals_null"
+      description: "Calling equals() on potentially null string causes NPE"
+      pattern: |
+        # String s = null;
+        # s.equals("test");  // NPE!
+        # Better: "test".equals(s)
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.java"]
+        check: "equals_on_nullable"
+      severity: "MEDIUM"
+      auto_fixable: true
+      fix_action: "Use constant.equals(variable) or Objects.equals()"
+
+    - name: "concurrent_modification"
+      description: "Modifying collection while iterating causes ConcurrentModificationException"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.java"]
+        check: "modify_during_iteration"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use Iterator.remove(), collect to new list, or CopyOnWriteArrayList"
+
+  flutter:
+    - name: "setstate_after_dispose"
+      description: "Calling setState() after widget disposal causes error"
+      pattern: |
+        # async function completes after widget disposed
+        # setState(() { ... });  // Error: setState() called after dispose()
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "setstate_without_mounted_check"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Check 'if (mounted)' before setState() in async callbacks"
+
+    - name: "build_context_across_async"
+      description: "Using BuildContext after async gap may reference stale widget"
+      pattern: |
+        # await someAsyncOperation();
+        # Navigator.of(context).push(...);  // context may be invalid!
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "context_after_await"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Check mounted before using context, or capture navigator before await"
+
+    - name: "missing_const_constructor"
+      description: "Widget without const constructor prevents optimization"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "stateless_without_const"
+      severity: "LOW"
+      auto_fixable: true
+      fix_action: "Add const constructor to stateless widgets"
+
+    - name: "unbounded_listview"
+      description: "ListView in Column/Row without constraints causes overflow"
+      pattern: |
+        # Column(children: [ListView(...)])  // Unbounded height!
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "listview_in_flex_without_shrink"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Wrap ListView in Expanded, or use shrinkWrap: true"
+
+  ios:
+    - name: "force_unwrap_optional"
+      description: "Force unwrapping nil optional causes crash"
+      pattern: |
+        # let value: String? = nil
+        # print(value!)  // Fatal error: unexpectedly found nil
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.swift"]
+        pattern: '\w+!'
+        context: "not_iboutlet"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use optional binding (if let), nil coalescing (??), or guard"
+
+    - name: "retain_cycle_closure"
+      description: "Strong self capture in closure creates memory leak"
+      pattern: |
+        # someAsyncCall {
+        #   self.doSomething()  // Strong reference cycle!
+        # }
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.swift"]
+        check: "closure_captures_self_strongly"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Use [weak self] or [unowned self] in capture list"
+
+    - name: "main_thread_ui_update"
+      description: "UI updates from background thread cause undefined behavior"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.swift"]
+        check: "ui_update_not_on_main"
+      severity: "CRITICAL"
+      auto_fixable: true
+      fix_action: "Wrap UI updates in DispatchQueue.main.async { }"
+
+    - name: "implicitly_unwrapped_optional"
+      description: "Implicitly unwrapped optional accessed before initialization"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.swift"]
+        check: "iuo_accessed_before_set"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use regular optional with proper unwrapping, or ensure initialization"
+
+  android:
+    - name: "ui_on_background_thread"
+      description: "UI operations from background thread cause CalledFromWrongThreadException"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.kt", "**/*.java"]
+        check: "view_access_in_coroutine_io"
+      severity: "CRITICAL"
+      auto_fixable: true
+      fix_action: "Use withContext(Dispatchers.Main) or runOnUiThread()"
+
+    - name: "activity_context_leak"
+      description: "Storing Activity context in singleton causes memory leak"
+      pattern: |
+        # object Singleton {
+        #   lateinit var context: Context  // Leaks Activity!
+        # }
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.kt"]
+        check: "activity_context_in_singleton"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use applicationContext instead of Activity context"
+
+    - name: "fragment_view_after_destroy"
+      description: "Accessing view binding after onDestroyView causes NPE"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.kt"]
+        check: "binding_after_destroy_view"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Set binding to null in onDestroyView, check before access"
+
+    - name: "lateinit_not_initialized"
+      description: "Accessing lateinit var before initialization causes UninitializedPropertyAccessException"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.kt"]
+        check: "lateinit_access_before_init"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use isInitialized check, or convert to nullable with lazy init"
+
+  nodered:
+    - name: "msg_payload_overwrite"
+      description: "Overwriting msg object loses upstream properties"
+      pattern: |
+        # msg = { payload: newValue };  // Loses msg._msgid, msg.topic, etc.
+        # Better: msg.payload = newValue;
+      detection:
+        method: "static_regex"
+        file_patterns: ["flows/**/*.json"]
+        check: "function_node_msg_reassignment"
+      severity: "MEDIUM"
+      auto_fixable: true
+      fix_action: "Modify msg properties instead of replacing entire object"
+
+    - name: "async_without_done"
+      description: "Async function node without node.done() blocks flow"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["flows/**/*.json"]
+        check: "async_function_missing_done"
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Call node.done() after async operation completes"
+
+# ============================================================================
+# STRUCTURE MUTATION ANTI-PATTERNS
+# Code patterns that unintentionally destroy or corrupt data structures.
+# ============================================================================
+structure_mutations:
+
+  web:
+    - name: "textContent_wipes_children"
+      description: "textContent assignment destroys child elements"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.js"]
+        pattern: '\\.textContent\s*='
+        context_check: "element_has_children"
+      severity: "HIGH"
+      auto_fixable: true
+
+    - name: "innerHTML_xss_risk"
+      description: "innerHTML with user input enables XSS attacks"
+      detection:
+        method: "taint_analysis"
+        file_patterns: ["**/*.js"]
+        check: "user_input_to_innerHTML"
+      severity: "CRITICAL"
+      auto_fixable: false
+
+  python:
+    - name: "dict_update_loses_nested"
+      description: "dict.update() overwrites nested dicts instead of merging"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.py"]
+        check: "update_on_nested_dict"
+      severity: "MEDIUM"
+      auto_fixable: false
+
+    - name: "list_multiply_shared_refs"
+      description: "[[]] * n creates n references to same inner list"
+      pattern: |
+        # matrix = [[0] * 3] * 3  # All rows are same list!
+        # matrix[0][0] = 1  # Sets [0][0], [1][0], [2][0]
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.py"]
+        pattern: '\[\[.*\]\]\s*\*\s*\d+'
+      severity: "HIGH"
+      auto_fixable: true
+      fix_action: "Use list comprehension: [[0]*3 for _ in range(3)]"
+
+  go:
+    - name: "map_concurrent_write"
+      description: "Concurrent map writes cause panic"
+      detection:
+        method: "race_detector"
+        file_patterns: ["**/*.go"]
+        check: "goroutine_map_access"
+      severity: "CRITICAL"
+      auto_fixable: false
+      fix_action: "Use sync.Map or mutex protection"
+
+  solidity:
+    - name: "delete_mapping_partial"
+      description: "delete on mapping only resets specific key, not entire mapping"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.sol"]
+        pattern: 'delete\s+\w+\s*;'
+        context: "variable_is_mapping"
+      severity: "MEDIUM"
+      auto_fixable: false
+
+  flutter:
+    - name: "list_clear_shared_reference"
+      description: "Clearing list that's shared with widget state causes unexpected UI"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "list_clear_in_state"
+      severity: "MEDIUM"
+      auto_fixable: false
+
+    - name: "map_from_iterable_overwrite"
+      description: "Map.fromIterable with duplicate keys silently overwrites"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.dart"]
+        check: "map_from_iterable_potential_duplicates"
+      severity: "MEDIUM"
+      auto_fixable: false
+
+  ios:
+    - name: "array_removeall_during_iteration"
+      description: "Modifying array while iterating causes index out of bounds"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.swift"]
+        check: "array_mutation_in_for_loop"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use filter(), reversed iteration, or collect indices first"
+
+    - name: "userdefaults_synchronize_deprecated"
+      description: "UserDefaults.synchronize() is unnecessary and deprecated"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.swift"]
+        pattern: 'UserDefaults.*synchronize\(\)'
+      severity: "LOW"
+      auto_fixable: true
+      fix_action: "Remove synchronize() calls, iOS handles persistence automatically"
+
+  android:
+    - name: "shared_prefs_apply_vs_commit"
+      description: "Using commit() blocks UI thread, apply() is async"
+      detection:
+        method: "static_regex"
+        file_patterns: ["**/*.kt", "**/*.java"]
+        pattern: '\.commit\(\)'
+        context: "shared_preferences"
+      severity: "MEDIUM"
+      auto_fixable: true
+      fix_action: "Use apply() unless you need synchronous write confirmation"
+
+    - name: "mutablelist_structural_modification"
+      description: "Modifying MutableList during iteration causes ConcurrentModificationException"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.kt"]
+        check: "mutablelist_modify_in_foreach"
+      severity: "HIGH"
+      auto_fixable: false
+      fix_action: "Use iterator.remove(), toMutableList().also { }, or filter()"
+
+  terraform:
+    - name: "map_merge_overwrite"
+      description: "merge() with duplicate keys silently overwrites"
+      detection:
+        method: "ast_analysis"
+        file_patterns: ["**/*.tf"]
+        check: "merge_potential_key_collision"
+      severity: "MEDIUM"
+      auto_fixable: false
+
+# ============================================================================
+# VALIDATION SEVERITY LEVELS
+# ============================================================================
+severity_levels:
+  missing_companion:
+    description: "Primary artifact exists but companion is missing"
+    severity: "HIGH"
+    auto_fixable: false
+    action: "Create bug ticket, block deployment"
+
+  incomplete_companion:
+    description: "Companion exists but is incomplete (missing keys, empty styles)"
+    severity: "HIGH"
+    auto_fixable: true
+    action: "Create bug ticket, may auto-fix if pattern clear"
+
+  orphan_primary:
+    description: "Primary artifact references non-existent companion"
+    severity: "CRITICAL"
+    auto_fixable: false
+    action: "Create bug ticket, block deployment"
+
+  invisible_output:
+    description: "Output validation shows element not visible/rendered"
+    severity: "CRITICAL"
+    auto_fixable: true
+    action: "Create bug ticket, investigate missing styles/initialization"
+
+# ============================================================================
+# BUG TICKET TEMPLATES
+# ============================================================================
+bug_templates:
+  missing_css_for_js_component:
+    title: "Missing CSS Styles: {component_name} classes have no CSS rules"
+    category: "missing_companion"
+    auto_fixable: true
+    description: |
+      JavaScript component {component_name} creates elements with class names:
+      {class_list}
+
+      No CSS rules were found for these classes in:
+      {searched_files}
+
+      Root cause: Component was created without companion stylesheet.
+
+    fix_suggestion: |
+      Add CSS rules for the following classes to {suggested_css_file}:
+      {class_list_with_selectors}
+
+  invisible_component:
+    title: "Invisible Component: {component_name} renders but is not visible"
+    category: "invisible_output"
+    auto_fixable: true
+    description: |
+      Component {component_name} creates DOM elements but they have:
+      - Zero width and/or height
+      - Hidden visibility
+      - No applied styles
+
+      Computed styles show: {computed_styles}
+
+    fix_suggestion: |
+      Check that CSS rules exist for component classes and that styles
+      define visible dimensions (width, height, display, etc.)
+
+  missing_asset:
+    title: "Missing Asset: {asset_path} referenced but file does not exist"
+    category: "missing_companion"
+    auto_fixable: false
+    description: |
+      Code references asset at path: {asset_path}
+
+      Found in: {source_file}:{line_number}
+      Reference type: {reference_type} (img src, css url(), Image.asset, etc.)
+
+      Asset file does not exist at expected location.
+
+    fix_suggestion: |
+      Either:
+      1. Add the missing asset file at {asset_path}
+      2. Update the reference to point to an existing asset
+      3. Remove the reference if asset is no longer needed
+
+  broken_route:
+    title: "Broken Navigation: {route_target} route referenced but not defined"
+    category: "missing_companion"
+    auto_fixable: false
+    description: |
+      Navigation code references route: {route_target}
+
+      Found in: {source_file}:{line_number}
+      Navigation type: {nav_type} (href, router.push, Navigator.push, segue, etc.)
+
+      No route handler or page exists for this destination.
+
+    fix_suggestion: |
+      Either:
+      1. Create the missing route handler/page for {route_target}
+      2. Update the navigation to point to an existing route
+      3. Remove the navigation if route is no longer needed
+
+  missing_env_var:
+    title: "Missing Environment Variable: {env_var_name} used but not defined"
+    category: "missing_companion"
+    auto_fixable: false
+    severity: "CRITICAL"
+    description: |
+      Code uses environment variable: {env_var_name}
+
+      Found in: {source_file}:{line_number}
+      Access pattern: {access_pattern} (process.env, import.meta.env, BuildConfig, etc.)
+
+      Variable not defined in any environment file.
+
+      Checked files: {checked_files}
+
+    fix_suggestion: |
+      Add {env_var_name} to environment configuration:
+      1. For development: Add to .env or .env.local
+      2. For production: Add to deployment config or CI/CD secrets
+      3. Document in .env.example for team awareness

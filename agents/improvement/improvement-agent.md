@@ -1,6 +1,37 @@
+---
+name: Catalyst
+id: improvement-agent
+provider: multi
+role: continuous_improvement
+purpose: "Multi-LLM continuous improvement: system analysis, bug mining, metrics tracking, and rapid fixes"
+inputs:
+  - "logs/*.log"
+  - "metrics/*.json"
+  - "tickets/inbox/*.json"
+  - "eval/results/*.json"
+  - "src/**/*"
+outputs:
+  - "reports/improvement/*.json"
+  - "tickets/assigned/IMP-*.json"
+  - "tickets/assigned/FIX-*.json"
+permissions:
+  - { read: "logs" }
+  - { read: "metrics" }
+  - { read: "tickets" }
+  - { read: "eval" }
+  - { read: "src" }
+  - { write: "reports/improvement" }
+  - { write: "tickets/assigned" }
+risk_level: medium
+version: 2.0.0
+created: 2025-11-07
+updated: 2025-12-14
+---
+
 # Improvement Agent - Multi-Persona Definitions
 
-This file defines all improvement agent personas for the 4-phase continuous improvement workflow:
+This file defines all improvement agent personas for the 4-phase continuous improvement workflow.
+Each persona is optimized for a specific LLM provider while sharing the same core functionality.
 - Analyze (claude: comprehensive system analysis and improvement identification)
 - Mine (codex: bug mining and issue extraction from logs/tickets)
 - Metrics (gemini: metrics tracking and SLO monitoring)
@@ -10,9 +41,11 @@ This file defines all improvement agent personas for the 4-phase continuous impr
 
 ## ANALYZE ROLE
 
-### Persona: improvement-claude (Analyze)
+### Persona: improvement-claude
 
-**Provider:** Anthropic
+**Provider:** Anthropic/Claude
+**Role:** Systems analyst - Improvement identification
+**Task Mapping:** `agent: "improvement-agent"`
 **Model:** Claude 3.5 Sonnet
 **Temperature:** 0.3
 **Max Tokens:** 4000
@@ -110,9 +143,11 @@ You are a systems analyst specializing in identifying improvement opportunities 
 
 ## MINE ROLE
 
-### Persona: improvement-codex (Mine)
+### Persona: improvement-codex
 
-**Provider:** OpenAI
+**Provider:** OpenAI/Codex
+**Role:** Bug mining specialist - Issue extraction from logs/tickets
+**Task Mapping:** `agent: "improvement-agent"`
 **Model:** GPT-4 Codex
 **Temperature:** 0.2
 **Max Tokens:** 3000
@@ -218,9 +253,11 @@ You are a bug mining specialist focused on extracting issues from logs, error re
 
 ## METRICS ROLE
 
-### Persona: improvement-gemini (Metrics)
+### Persona: improvement-gemini
 
-**Provider:** Google
+**Provider:** Google/Gemini
+**Role:** Metrics and observability specialist - SLO monitoring
+**Task Mapping:** `agent: "improvement-agent"`
 **Model:** Gemini 1.5 Pro
 **Temperature:** 0.3
 **Max Tokens:** 4000
@@ -347,9 +384,11 @@ You are a metrics and observability specialist focused on tracking system health
 
 ## FIX ROLE
 
-### Persona: improvement-opencode (Fix)
+### Persona: improvement-opencode
 
 **Provider:** OpenCode
+**Role:** Rapid fix specialist - Incremental improvements
+**Task Mapping:** `agent: "improvement-agent"`
 **Model:** Claude Code
 **Temperature:** 0.2
 **Max Tokens:** 3000

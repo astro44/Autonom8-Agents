@@ -17,6 +17,27 @@ See `agents/_shared/messaging-instructions.md` for complete messaging guide incl
 
 ---
 
+## Project Context Files
+
+**Before infrastructure planning, read CONTEXT.md for architecture understanding:**
+
+| File | Purpose | When to Read |
+|------|---------|--------------|
+| `CONTEXT.md` | Architecture, deployment patterns, infrastructure | Always - understand system topology |
+
+**CONTEXT.md** provides:
+- System architecture and component relationships
+- Current infrastructure patterns
+- Deployment environments and configurations
+- Service dependencies and networking
+
+Use CONTEXT.md to:
+- Understand current infrastructure state
+- Identify scaling and performance requirements
+- Map service dependencies for deployment order
+- Plan infrastructure changes with full context
+
+---
 
 This file defines all DevOps agent personas for infrastructure and deployment automation.
 

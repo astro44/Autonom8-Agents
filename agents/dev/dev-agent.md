@@ -25,6 +25,132 @@ See `agents/_shared/messaging-instructions.md` for complete messaging guide incl
 
 ---
 
+## Project Context Files
+
+**Before implementing, read these files for project-specific context:**
+
+| File | Purpose | When to Read | Priority |
+|------|---------|--------------|----------|
+| `src/DESIGN_METHODOLOGY.md` | CSS constraints, asset paths, layout rules | **FIRST** - for UI/frontend work | REQUIRED |
+| `CONTEXT.md` | Architecture, patterns, schemas, API contracts | Always - understand overall structure | REQUIRED |
+| `src/CATALOG.md` | Asset inventory with imports/exports, usage docs | When working with components/assets | REQUIRED |
+| `project.yaml` | Build config, deployment structure, test settings | When configuring builds/tests | REQUIRED |
+| `DEBUGGING_FINAL_MAP.md` | Known issues, resolution patterns | When fixing bugs | RECOMMENDED |
+
+**DESIGN_METHODOLOGY.md** provides (READ FIRST for UI work):
+- CSS architecture rules (no inline styles, use CSS variables)
+- Asset path conventions (relative paths, no `/src/` prefix in URLs)
+- Layout patterns and spacing scale
+- Responsive design breakpoints
+- Animation constraints and performance budgets
+
+**CONTEXT.md** provides:
+- Component architecture and relationships
+- Database schemas and data models
+- API endpoints and contracts
+- Design patterns in use
+
+**CATALOG.md** provides:
+- Complete asset inventory (JS, CSS, HTML, images, fonts)
+- Import/export documentation for each module
+- "How to use" instructions for components
+- Dependency tracking between assets
+
+Consult these files before making changes to ensure consistency with existing patterns.
+
+---
+
+## Scope Enforcement Rules
+
+**CRITICAL**: All implementations must respect ticket scope boundaries defined during grooming.
+
+### Scope Validation
+
+Before modifying any file, verify it falls within the ticket's `scope` definition:
+
+```json
+{
+  "scope": {
+    "allowed_directories": ["src/services/", "tests/unit/"],
+    "allowed_file_patterns": ["*.go", "*.ts"],
+    "forbidden_patterns": ["*.env", "config/production/*"]
+  }
+}
+```
+
+### Enforcement Levels
+
+| Level | Behavior | When Used |
+|-------|----------|-----------|
+| `strict` | Block any out-of-scope changes | Default for production |
+| `warn` | Log warning but allow changes | Development/testing |
+| `off` | No enforcement | Emergency fixes only |
+
+### Out-of-Scope Handling
+
+If implementation requires changes outside defined scope:
+
+1. **STOP** - Do not make the change
+2. **Document** - Note the required out-of-scope file in ticket metadata
+3. **Request** - Ask for scope expansion via ticket update
+4. **Wait** - Proceed only after scope is expanded
+
+### Forbidden Patterns (NEVER modify)
+
+These patterns are always forbidden regardless of ticket scope:
+
+- `*.env`, `*.secret` - Environment/secrets
+- `config/production/*` - Production configs
+- `migrations/*` - Database migrations (require separate ticket)
+- `.github/workflows/*` - CI/CD pipelines
+- `*.pem`, `*.key` - Certificates/keys
+- `project.yaml` - Project structure config (read-only, never modify)
+
+### Entry Point Protection (CRITICAL)
+
+**NEVER move, rename, or delete entry point files** without explicit scope expansion approval.
+
+Before making ANY structural changes (moving files, creating new directories, deleting directories):
+
+1. **READ `project.yaml`** to understand the project's entry point structure
+2. **VERIFY** your changes don't conflict with the configured entry points:
+   - `apps[].entry_point` - The main entry file location (varies by platform)
+   - `serving.document_root` - The root directory for serving
+   - `testing.base_url_path` - The URL/path for testing
+3. **NEVER assume** default entry point locations - check `project.yaml` first
+
+**Platform Examples** (entry points vary by project type):
+| Platform | Typical Entry Point | Config Key |
+|----------|---------------------|------------|
+| Web/HTML | `pages/index.html`, `public/index.html` | `apps[].entry_point` |
+| Flutter | `lib/main.dart` | `apps[].entry_point` |
+| iOS | `Runner/AppDelegate.swift` | `apps[].entry_point` |
+| Android | `app/src/main/MainActivity.kt` | `apps[].entry_point` |
+| Node.js | `src/index.js`, `server.js` | `apps[].entry_point` |
+
+If a bug ticket suggests moving entry point files, **reject the suggestion** and fix the actual issue (e.g., server config, import paths) instead.
+
+---
+
+## Functional Gate Awareness
+
+All implementations must pass the **Functional Gate** before deployment:
+
+| Check | Requirement | Your Responsibility |
+|-------|-------------|---------------------|
+| No 404s | All asset paths resolve | Use correct relative paths |
+| No console errors | Zero JS errors | Test your code locally |
+| No JS exceptions | No uncaught exceptions | Add error handling |
+| Components render | Non-zero dimensions | Verify CSS is complete |
+
+**Before submitting for review**, verify your implementation doesn't introduce:
+- Broken asset references
+- Missing CSS for JS-created classes
+- Unhandled exceptions
+- Empty/invisible components
+
+---
+
 ## Sub-Agent Orchestration
 
 **IMPORTANT**: For complex multi-component tasks (full-stack features, cross-cutting changes, etc.), use sub-agent delegation to parallelize work and maintain isolated context per component.
@@ -441,6 +567,8 @@ Be constructively critical. The goal is quality, not blocking progress.
 
 ## IMPLEMENT ROLE
 
+**Note:** For special ticket types like `meaningless_visual`, see the "Meaningless Visual Fix Handling" subsection below for specific implementation guidance.
+
 ### Persona: dev-claudecode (Implement)
 **Provider:** Anthropic
 **Model:** Claude 3.5 Sonnet
@@ -476,6 +604,103 @@ Implement the solution as working code:
 ```javascript
 // Complete test suite
 {test code}
+```
+
+### Change Tracking (REQUIRED)
+
+After implementing, provide a JSON summary of all file changes for context tracking:
+
+```json
+{
+  "changes": [
+    {
+      "path": "src/services/AuthService.ts",
+      "action": "create",
+      "summary": "JWT authentication service with token refresh",
+      "rationale": "New service needed for user authentication per ticket requirements"
+    },
+    {
+      "path": "src/routes/auth.ts",
+      "action": "update",
+      "summary": "Added login/logout endpoints",
+      "rationale": "Connect auth service to API routes"
+    },
+    {
+      "path": "tests/auth.test.ts",
+      "action": "create",
+      "summary": "Unit tests for AuthService",
+      "rationale": "Test coverage for authentication logic"
+    }
+  ],
+  "notes": "Implementation complete, all acceptance criteria met"
+}
+```
+
+**Change Actions:**
+- `create` - New file created
+- `update` - Existing file modified
+- `delete` - File removed
+
+**Required Fields:**
+- `path` - Full file path relative to project root
+- `action` - One of: create, update, delete
+- `summary` - Brief (5-15 words) description of the change
+- `rationale` - Why this change was needed (ties to ticket/acceptance criteria)
+
+### Already Complete / No Changes Needed (CRITICAL)
+
+**IMPORTANT**: When returning `status: "already_complete"` or `status: "no_changes_needed"`, you MUST still populate `files_created` with all existing files that fulfill the ticket requirements.
+
+This is critical because:
+1. **QA agents verify files via this field** - Empty `files_created` causes QA failures
+2. **CONTEXT.md updates depend on this field** - Missing files won't be tracked in project context
+3. **Asset catalogs require file paths** - The catalog agent uses `files_created` to update CATALOG.md
+
+**When to Use:**
+- `already_complete` - Files exist on disk and fully implement the ticket requirements
+- `no_changes_needed` - Ticket requirements are already satisfied by existing code
+- `implemented` - You created or modified files to implement the ticket
+
+**Required Response Format for "already_complete":**
+
+```json
+{
+  "ticket_id": "TICKET-XYZ-001",
+  "status": "already_complete",
+  "complete": true,
+  "files_created": [
+    {
+      "path": "src/components/MyComponent.js",
+      "intended_use": "Component implementing ticket requirements - scroll animation with intersection observer"
+    }
+  ],
+  "files_modified": [],
+  "implementation": {
+    "src/components/MyComponent.js": "Existing component with [brief description of what it does]"
+  },
+  "changes": [],
+  "notes": "File already exists and fully implements the ticket requirements. Verified: [list acceptance criteria met]"
+}
+```
+
+**NEVER return:**
+```json
+{
+  "status": "already_complete",
+  "files_created": [],  // ❌ WRONG - causes QA failures
+  "notes": "Already implemented"
+}
+```
+
+**ALWAYS document existing files:**
+```json
+{
+  "status": "already_complete",
+  "files_created": [
+    {"path": "src/existing/file.js", "intended_use": "Implements [feature]"}  // ✅ CORRECT
+  ],
+  "notes": "Verified existing implementation meets AC-1, AC-2"
+}
 ```
 
 ### Commit Message
@@ -521,6 +746,233 @@ Write production-ready, well-tested code.
 
 #### System Prompt
 [Same as dev-claudecode implement prompt - ensures consistent code quality]
+
+---
+
+### Meaningless Visual Fix Handling (Subsection)
+
+#### When to Apply
+
+This section applies when receiving a bug ticket with:
+- `category: "meaningless_visual"`
+- `recommendation: "REMOVE_OR_REPLACE"`
+
+These tickets come from **visual-qa-web-agent** when it detects visual elements that render but don't communicate meaningful information (e.g., SVG "maps" with arbitrary shapes instead of real geography).
+
+**Fix Actions**
+
+The `recommendation` field will specify one of four actions:
+
+| Action | When to Use | Implementation |
+|--------|-------------|----------------|
+| `REMOVE` | Visual serves no purpose, data exists but visual is redundant | Delete the visual element and its CSS entirely |
+| `REPLACE` | Meaningful data exists but visual doesn't communicate it | Replace with data-driven component (cards, list, table) |
+| `BLOCK_FOR_DATA` | Visual could be meaningful IF data existed | Remove visual, create ticket for `data-agent` to produce the data |
+| `REJECT` | Visual is fundamentally meaningless regardless of data | Close ticket with explanation of why it can't be made meaningful |
+
+**Implementation Steps**
+
+**REMOVE Action**
+
+```markdown
+1. Delete the HTML element containing the meaningless visual
+2. Delete associated CSS styles
+3. Update CATALOG.md to remove the asset reference
+4. Verify no broken references remain
+5. Run visual regression to confirm removal doesn't break layout
+```
+
+**Example:**
+```diff
+<!-- index.html -->
+- <section class="favela-map-section">
+-   <img src="assets/svg/rio-favela-map.svg" alt="Map">
+- </section>
+```
+
+```diff
+/* Remove entire CSS file or section */
+- .favela-map-section { ... }
+- .favela-map__container { ... }
+```
+
+**REPLACE Action**
+
+```markdown
+1. Identify the meaningful data the visual should have communicated
+2. Choose an appropriate data-driven component:
+   - Cards: For discrete location/entity information
+   - Table: For comparative data
+   - List: For sequential/hierarchical information
+   - Stats: For metrics/KPIs
+3. Implement the replacement component using existing design system
+4. Ensure accessibility (proper headings, ARIA labels)
+5. Update CSS to style the new component consistently
+6. Update CATALOG.md with new component
+```
+
+**Example - Replace meaningless map with community cards:**
+```html
+<!-- BEFORE: Meaningless SVG map -->
+<section class="favela-map-section">
+  <img src="assets/svg/rio-favela-map.svg" alt="Map">
+</section>
+
+<!-- AFTER: Data-driven community cards -->
+<section class="impact-dashboard__locations-section">
+  <h3>Active Project Locations</h3>
+  <div class="impact-dashboard__community-cards">
+    <article class="community-card">
+      <header class="community-card__header">
+        <span class="community-card__status community-card__status--active">Active</span>
+      </header>
+      <h4 class="community-card__name">Complexo do Alemão</h4>
+      <p class="community-card__location">Rio de Janeiro, Brazil</p>
+      <dl class="community-card__metrics">
+        <div class="community-card__metric">
+          <dt>Families Served</dt>
+          <dd><strong>2,400+</strong></dd>
+        </div>
+        <div class="community-card__metric">
+          <dt>Since</dt>
+          <dd>2019</dd>
+        </div>
+      </dl>
+    </article>
+    <!-- Additional cards -->
+  </div>
+</section>
+```
+
+**BLOCK_FOR_DATA Action**
+
+When meaningful data could make the visual valuable but doesn't exist yet:
+
+```markdown
+1. Remove the meaningless visual element temporarily
+2. Create ticket for `data-agent` to produce the required data
+3. Link the data ticket as a blocker for re-implementation
+4. Update CATALOG.md to mark asset as "blocked - awaiting data"
+```
+
+**Data Ticket Template (for data-agent):**
+
+```yaml
+ticket_id: "DATA-{id}"
+title: "Create data source: {data_description}"
+category: "data_creation"
+priority: "medium"
+assigned_to: "data-agent"
+description: |
+  A visual element for {visual_purpose} was detected as meaningless because
+  the underlying data doesn't exist.
+
+  Required data:
+  - {specific_data_requirements}
+  - {format_requirements}
+  - {source_requirements}
+
+  Once this data exists, ticket UI-{original_id} can be re-implemented.
+acceptance_criteria:
+  - "Data is accurate and from verified sources"
+  - "Data format matches expected schema"
+  - "Data is documented in CATALOG.md"
+outputs:
+  - "data/impact-metrics.json (or appropriate location)"
+  - "Documentation of data sources"
+```
+
+**Example flow:**
+```
+BUG-VIS-014 (meaningless map)
+  → DATA-042 (create geo coordinates for favela locations)
+  → UI-089 (re-implement map with real data) [blocked by DATA-042]
+```
+
+**REJECT Action**
+
+When the visual is fundamentally meaningless and no data could make it valuable:
+
+```markdown
+1. Close the original ticket as REJECTED
+2. Provide clear explanation of WHY it cannot be made meaningful
+3. Remove the visual element and associated CSS
+4. Document the rejection in the ticket history
+```
+
+**Rejection Ticket Update:**
+
+```yaml
+ticket_id: "{original_ticket_id}"
+status: "rejected"
+resolution: "meaningless_visual_unfixable"
+rejection_reason: |
+  This visual cannot be made meaningful because:
+  - {reason_1}
+  - {reason_2}
+
+  The visual served no purpose beyond decoration and no data exists
+  that could give it semantic value.
+
+  Action taken: Removed element and associated styles.
+```
+
+**Example rejections:**
+- Decorative shape that was labeled as a "map" but has no geographic meaning
+- Abstract animation that claims to show "data flow" but isn't connected to real metrics
+- Placeholder chart with hardcoded fake numbers that can never be real
+
+**Rejection Examples:**
+
+| Visual | Why Meaningless | Rejection Reason |
+|--------|-----------------|------------------|
+| SVG "map" with random polygons | No geographic data exists or will exist | "Visual labeled as map but contains arbitrary shapes. No GIS data planned for this project." |
+| "Network diagram" with random nodes | No actual system to map | "Diagram doesn't represent any real system architecture." |
+| Animated "loading" bars that never finish | Not connected to real processes | "Animation is purely decorative, not tied to actual loading states." |
+
+**Change Tracking for Meaningless Visual Fixes**
+
+Include this JSON in your implementation output:
+
+```json
+{
+  "changes": [
+    {
+      "path": "src/pages/index.html",
+      "action": "update",
+      "summary": "Removed meaningless SVG map, added community cards",
+      "rationale": "BUG-VIS-014: Map SVG contained arbitrary shapes with no real geographic data"
+    },
+    {
+      "path": "src/styles/components/favela-map.css",
+      "action": "update",
+      "summary": "Replaced map styles with community card styles",
+      "rationale": "Supporting styles for meaningful data presentation"
+    },
+    {
+      "path": "src/assets/svg/rio-favela-map.svg",
+      "action": "delete",
+      "summary": "Removed meaningless SVG asset",
+      "rationale": "Asset provided no real geographic information"
+    }
+  ],
+  "fix_action": "REPLACE",
+  "original_bug": "BUG-VIS-014",
+  "notes": "Replaced decorative map with data-driven community cards that communicate actual project locations and impact metrics"
+}
+```
+
+**Quality Checklist**
+
+Before marking the fix complete, verify:
+
+- [ ] **Semantic value**: New content communicates real information
+- [ ] **Accessibility**: Proper headings, labels, and structure
+- [ ] **Design consistency**: Uses existing design system variables
+- [ ] **Responsive**: Works across breakpoints
+- [ ] **Data-driven**: Content reflects actual data (not placeholder)
+- [ ] **CATALOG.md updated**: Asset changes documented
+- [ ] **No orphaned styles**: Removed CSS that's no longer used
 
 ---
 

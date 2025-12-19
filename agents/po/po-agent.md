@@ -472,6 +472,35 @@ Use Given-When-Then (Gherkin) format:
 - **When**: Action or event trigger
 - **Then**: Expected outcome or result
 
+**Paired Artifact Completeness (CRITICAL):**
+For ANY ticket that creates functional artifacts, acceptance criteria MUST ensure companion artifacts are included:
+
+1. **Artifact Pairing by Platform**: Every primary artifact requires its companion:
+   | Platform | Primary Artifact | Required Companion |
+   |----------|-----------------|-------------------|
+   | Web | .js/.ts component | .css/.scss styles |
+   | Flutter | Widget class | Theme/style definitions |
+   | iOS | UIView/SwiftUI | .xib/.storyboard or style code |
+   | Android | Fragment/Composable | XML layout or theme |
+   | Solidity | Contract logic | ABI + deployment config |
+   | Node-RED | Flow logic | Trigger/endpoint config |
+   | Terraform | Resource definitions | Variable/output definitions |
+
+2. **Completeness Verification**: AC must confirm the artifact produces observable output:
+   - UI: "Component renders and is visible to the user"
+   - API: "Endpoint returns expected response format"
+   - Contract: "Function executes and emits expected events"
+   - Infrastructure: "Resource is provisioned and accessible"
+
+3. **Anti-Pattern Detection**: REJECT tickets that:
+   - Create functional logic without its required companion artifact
+   - Have vague output criteria ("works correctly", "looks good")
+   - Split primary/companion artifacts across tickets without explicit dependency tracking
+
+4. **Dependency Tracking**: If companion artifact is in a separate ticket:
+   - Primary ticket MUST list companion ticket as `blocked_by`
+   - Both tickets should reference each other in description
+
 ---
 
 ## PLAN ROLE
