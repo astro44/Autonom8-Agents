@@ -19,6 +19,12 @@ This document provides a visual overview of all agent definitions in the Autonom
 │   │   ├── po-pm-agent.md
 │   │   └── refactor-agent.md
 │   └── codex.md -> ../agents.md
+├── .cursor
+│   ├── overrides
+│   │   ├── diff-analyzer-agent.md
+│   │   ├── pr-drafter-agent.md
+│   │   └── quick-fix-agent.md
+│   └── cursor.md -> ../agents.md
 ├── .gemini
 │   ├── overrides
 │   │   ├── doc-summarizer-agent.md
@@ -60,7 +66,7 @@ This document provides a visual overview of all agent definitions in the Autonom
 ├── manifest.yaml
 └── README.md
 
-18 directories, 36 files
+20 directories, 40 files
 ```
 
 ## Summary
@@ -89,7 +95,7 @@ This document provides a visual overview of all agent definitions in the Autonom
 
 ### Provider-Specific Overrides
 
-**Total: 13 agents**
+**Total: 16 agents**
 
 #### Claude (.claude/overrides/) - 3 agents
 - `brutal-critic-agent.md` - Aggressive code critic
@@ -107,6 +113,11 @@ This document provides a visual overview of all agent definitions in the Autonom
 - `po-pm-agent.md` - Product Owner/PM - User stories and sprint planning
 - `refactor-agent.md` - Code refactoring specialist
 
+#### Cursor (.cursor/overrides/) - 3 agents
+- `diff-analyzer-agent.md` - Diff analysis and review
+- `pr-drafter-agent.md` - Pull request drafting
+- `quick-fix-agent.md` - Fast bug fixes
+
 #### OpenCode (.opencode/overrides/) - 3 agents
 - `diff-analyzer-agent.md` - Diff analysis and review
 - `pr-drafter-agent.md` - Pull request drafting
@@ -119,11 +130,12 @@ Each provider has a manifest that symlinks to the canonical `agents.md`:
 - `.claude/claude.md` → `../agents.md`
 - `.gemini/gemini.md` → `../agents.md`
 - `.codex/codex.md` → `../agents.md`
+- `.cursor/cursor.md` → `../agents.md`
 - `.opencode/opencode.md` → `../agents.md`
 
 ## Agent Lookup Order
 
-When a CLI wrapper (e.g., `claude.sh`, `gemini.sh`, `codex.sh`, `opencode.sh`) runs an agent:
+When a CLI wrapper (e.g., `claude.sh`, `gemini.sh`, `codex.sh`, `opencode.sh`, `cursor.sh`) runs an agent:
 
 1. **Check provider overrides first**: `.{provider}/overrides/{agent-name}.md`
 2. **Fallback to canonical**: `agents/{category}/{agent-name}.md`
@@ -158,11 +170,11 @@ gemini.sh run smoke-test-agent
 | Category | Count |
 |----------|-------|
 | **Canonical Agents (Shared)** | 10 |
-| **Provider Overrides** | 13 |
-| **Total Agent Definitions** | 23 |
-| **Provider Manifests** | 4 |
-| **Total Directories** | 18 |
-| **Total Files** | 36 |
+| **Provider Overrides** | 16 |
+| **Total Agent Definitions** | 26 |
+| **Provider Manifests** | 5 |
+| **Total Directories** | 20 |
+| **Total Files** | 40 |
 
 ## Benefits of This Structure
 

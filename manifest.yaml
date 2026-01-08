@@ -34,6 +34,10 @@ provider_overrides:
     - code-generator-agent
     - po-pm-agent
     - refactor-agent
+  cursor:
+    - diff-analyzer-agent
+    - pr-drafter-agent
+    - quick-fix-agent
   opencode:
     - diff-analyzer-agent
     - pr-drafter-agent
@@ -45,10 +49,12 @@ paths:
   claude_overrides: ".claude/overrides"
   gemini_overrides: ".gemini/overrides"
   codex_overrides: ".codex/overrides"
+  cursor_overrides: ".cursor/overrides"
   opencode_overrides: ".opencode/overrides"
   claude_manifest: ".claude/claude.md"
   gemini_manifest: ".gemini/gemini.md"
   codex_manifest: ".codex/codex.md"
+  cursor_manifest: ".cursor/cursor.md"
   opencode_manifest: ".opencode/opencode.md"
   policies: "policies"
   schemas: "schemas"

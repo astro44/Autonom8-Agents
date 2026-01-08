@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Unified Dev Agent - Multi-Persona via CLI Tools
 #
-# Uses CLI tools (claude, codex, gemini, opencode) instead of direct API calls
+# Uses CLI tools (claude, codex, gemini, opencode, cursor) instead of direct API calls
 # Behavior determined by symlink name:
 #   dev-claudecode.sh → claude CLI
 #   dev-opencode.sh → opencode CLI
 #   dev-gemini.sh → gemini CLI
 #   dev-codex.sh → codex CLI
+#   dev-cursor.sh → cursor CLI
 
 set -euo pipefail
 
@@ -35,6 +36,10 @@ case "$SCRIPT_NAME" in
         PERSONA="codex"
         CLI_TOOL="codex"
         ;;
+    dev-cursor.sh)
+        PERSONA="cursor"
+        CLI_TOOL="cursor"
+        ;;
     dev-agent.sh)
         # Direct invocation - require persona in input
         INPUT_PEEK=$(cat)
@@ -45,13 +50,14 @@ case "$SCRIPT_NAME" in
             opencode) CLI_TOOL="opencode" ;;
             gemini) CLI_TOOL="gemini" ;;
             codex) CLI_TOOL="codex" ;;
+            cursor) CLI_TOOL="cursor" ;;
         esac
 
         echo "$INPUT_PEEK"  # Pass through for later reading
         ;;
     *)
         echo "Error: Unknown script name '$SCRIPT_NAME'" >&2
-        echo "Expected: dev-claudecode.sh, dev-opencode.sh, dev-gemini.sh, or dev-codex.sh" >&2
+        echo "Expected: dev-claudecode.sh, dev-opencode.sh, dev-gemini.sh, dev-codex.sh, or dev-cursor.sh" >&2
         exit 1
         ;;
 esac
@@ -194,6 +200,12 @@ else
         opencode)
             echo "$FULL_PROMPT" | opencode run 2>/dev/null || {
                 echo "Error: Failed to call opencode CLI" >&2
+                exit 1
+            }
+            ;;
+        cursor)
+            echo "$FULL_PROMPT" | cursor 2>/dev/null || {
+                echo "Error: Failed to call cursor CLI" >&2
                 exit 1
             }
             ;;

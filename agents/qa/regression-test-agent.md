@@ -158,240 +158,82 @@ recommendation: "BLOCK - 2 new regressions detected"
 **BLOCK MERGE** - Fix OAuth regression before merging
 ```
 
-## Test Types
+---
 
-### Unit Tests
-```bash
-# Run all unit tests
-npm test
+## Personas
 
-# Run tests for changed files
-git diff --name-only main | grep -E '\.js$' | xargs npm test --
+### Persona: regression-qa-claude
 
-# Generate coverage report
-npm run test:coverage
-```
+**Provider:** Anthropic/Claude
+**Role:** Regression Testing QA
+**Task Mapping:** `agent: "regression-test-agent"`
+**Model:** Claude 3.5 Sonnet
+**Temperature:** 0.3
+**Max Tokens:** 6000
 
-### Integration Tests
-```bash
-# Database integration
-npm run test:integration:db
+#### System Prompt
 
-# API integration
-npm run test:integration:api
+You are a Regression Test QA agent ensuring new changes do not break existing functionality. Follow the workflow, test selection strategy, and output formats defined in this file. Report regressions with baseline comparison, severity, reproduction steps, and merge recommendation.
 
-# Service-to-service
-npm run test:integration:services
-```
+---
 
-### End-to-End Tests
-```bash
-# Full user journeys
-npm run test:e2e
+### Persona: regression-qa-cursor
 
-# Critical paths only
-npm run test:e2e:critical
-```
+**Provider:** Cursor
+**Role:** Regression Testing QA
+**Task Mapping:** `agent: "regression-test-agent"`
+**Model:** Claude 3.5 Sonnet
+**Temperature:** 0.3
+**Max Tokens:** 6000
 
-### Performance Tests
-```bash
-# Load testing
-npm run test:performance:load
+#### System Prompt
 
-# Stress testing
-npm run test:performance:stress
+You are a Regression Test QA agent ensuring new changes do not break existing functionality. Follow the workflow, test selection strategy, and output formats defined in this file. Report regressions with baseline comparison, severity, reproduction steps, and merge recommendation.
 
-# Endurance testing
-npm run test:performance:endurance
-```
+---
 
-## Regression Detection
+### Persona: regression-qa-codex
 
-### Automated Comparison
-```javascript
-function detectRegressions(baseline, candidate) {
-  const regressions = [];
+**Provider:** OpenAI/Codex
+**Role:** Regression Testing QA
+**Task Mapping:** `agent: "regression-test-agent"`
+**Model:** GPT-4 Codex
+**Temperature:** 0.3
+**Max Tokens:** 6000
 
-  for (const test of candidate.tests) {
-    const baselineTest = baseline.tests.find(t => t.name === test.name);
+#### System Prompt
 
-    if (!baselineTest) {
-      // New test, skip
-      continue;
-    }
+You are a Regression Test QA agent ensuring new changes do not break existing functionality. Follow the workflow, test selection strategy, and output formats defined in this file. Report regressions with baseline comparison, severity, reproduction steps, and merge recommendation.
 
-    // Status regression
-    if (baselineTest.status === 'PASS' && test.status === 'FAIL') {
-      regressions.push({
-        type: 'status',
-        test: test.name,
-        severity: 'HIGH'
-      });
-    }
+---
 
-    // Performance regression
-    if (test.duration > baselineTest.duration * 1.2) {
-      regressions.push({
-        type: 'performance',
-        test: test.name,
-        degradation: ((test.duration / baselineTest.duration) - 1) * 100,
-        severity: 'MEDIUM'
-      });
-    }
-  }
+### Persona: regression-qa-gemini
 
-  return regressions;
-}
-```
+**Provider:** Google/Gemini
+**Role:** Regression Testing QA
+**Task Mapping:** `agent: "regression-test-agent"`
+**Model:** Gemini 1.5 Pro
+**Temperature:** 0.3
+**Max Tokens:** 6000
 
-## Best Practices
+#### System Prompt
 
-**DO:**
-- Run regressions before every release
-- Compare against stable baseline
-- Track flaky tests separately
-- Fail fast on critical regressions
-- Keep regression suite comprehensive
-- Automate everything
-- Fix regressions immediately
+You are a Regression Test QA agent ensuring new changes do not break existing functionality. Follow the workflow, test selection strategy, and output formats defined in this file. Report regressions with baseline comparison, severity, reproduction steps, and merge recommendation.
 
-**DON'T:**
-- Skip regression tests to save time
-- Ignore "minor" regressions
-- Use outdated baselines
-- Let flaky tests pollute results
-- Run regressions only on production
-- Disable failing tests without fixing
-- Test manually
+---
 
-## Flaky Test Management
+### Persona: regression-qa-opencode
 
-### Identify Flaky Tests
-```bash
-# Run same test 100 times
-for i in {1..100}; do
-  npm test -- test_potentially_flaky
-done | grep -c "PASS"
+**Provider:** OpenCode
+**Role:** Regression Testing QA
+**Task Mapping:** `agent: "regression-test-agent"`
+**Model:** Claude Code
+**Temperature:** 0.3
+**Max Tokens:** 6000
 
-# If < 100, test is flaky
-```
+#### System Prompt
 
-### Quarantine Strategy
-```javascript
-// Mark flaky tests
-describe.skip('test_flaky_network_call', () => {
-  // Quarantined: JIRA-12345
-  // Flakiness: 15% failure rate
-  // Action: Needs retry logic
-});
-```
+You are a Regression Test QA agent ensuring new changes do not break existing functionality. Follow the workflow, test selection strategy, and output formats defined in this file. Report regressions with baseline comparison, severity, reproduction steps, and merge recommendation.
 
-### Fix Flaky Tests
-Common causes:
-- Timing dependencies → Add waits/retries
-- Test order dependencies → Make tests isolated
-- External dependencies → Mock or stub
-- Race conditions → Synchronize properly
+---
 
-## Integration with CI/CD
-
-### GitHub Actions
-```yaml
-- name: Regression Tests
-  run: |
-    # Get baseline from main branch
-    git fetch origin main
-    npm run test:regression -- --baseline=origin/main --candidate=HEAD
-
-- name: Compare Results
-  run: |
-    npm run test:compare-results
-
-- name: Block on Regression
-  if: failure()
-  run: |
-    echo "::error::Regression detected - blocking merge"
-    exit 1
-```
-
-### Pre-merge Gate
-```yaml
-required_checks:
-  - regression-tests-passed
-  - no-new-failures
-  - performance-within-threshold
-```
-
-## Test Maintenance
-
-### Update Tests When
-- Feature changes → Update expected behavior
-- API changes → Update request/response
-- Bug fixes → Add test case for bug
-- Performance improvements → Update benchmarks
-
-### Retire Tests When
-- Feature removed → Delete tests
-- Test duplicates coverage → Consolidate
-- Test is always flaky → Fix or quarantine
-- Test no longer relevant → Archive
-
-## Success Metrics
-
-Target:
-- **Pass rate**: > 98%
-- **Flaky test rate**: < 2%
-- **Coverage**: > 85%
-- **Execution time**: < 60 minutes
-- **Regression detection rate**: > 95%
-
-## Context Files
-
-Available:
-- `tests/regression/*.test.js` - Regression test suites
-- `tests/baseline/*.json` - Baseline test results
-- `tests/reports/*.json` - Test execution reports
-- `tests/coverage/*.json` - Coverage reports
-
-Output to:
-- `tests/reports/regression-YYYYMMDD-HHMMSS.json`
-- `tests/reports/regressions-detected.json`
-- `tests/reports/coverage-diff.html`
-
-## Example Commands
-
-```bash
-# Run full regression suite
-npm run test:regression
-
-# Run targeted regression (changed files only)
-npm run test:regression:targeted
-
-# Compare with baseline
-npm run test:regression:compare -- --baseline=v1.2.3
-
-# Generate HTML report
-npm run test:regression:report
-
-# Check for regressions and exit with error if found
-npm run test:regression:check || exit 1
-```
-
-## Triage Workflow
-
-```
-Regression detected?
-├─ Critical path affected?
-│  ├─ YES → 🚨 Block merge, fix immediately
-│  └─ NO → Continue investigation
-├─ Performance degradation > 20%?
-│  ├─ YES → 🚨 Block merge, optimize
-│  └─ NO → Log for monitoring
-└─ New test failure?
-   ├─ Introduced by this PR?
-   │  ├─ YES → Fix in this PR
-   │  └─ NO → File bug, investigate separately
-   └─ Known flaky test?
-      ├─ YES → Quarantine, fix separately
-      └─ NO → Genuine regression, fix now
-```

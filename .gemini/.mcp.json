@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "browser-verify": {
+      "command": "node",
+      "args": ["/Users/astro_sk/Documents/TFS/Autonom8-core/mcp-servers/browser-verify/src/index.js"],
+      "env": {}
+    }
+  }
+}

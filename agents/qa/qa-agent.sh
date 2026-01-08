@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Unified QA Agent - Multi-Persona via CLI Tools
 #
-# Uses CLI tools (claude, codex, gemini, opencode) instead of direct API calls
+# Uses CLI tools (claude, codex, gemini, opencode, cursor) instead of direct API calls
 # Behavior determined by symlink name:
 #   qa-codex.sh → codex CLI (Test Planner)
 #   qa-gemini.sh → gemini CLI (Test Executor)
 #   qa-claudecode.sh → claude CLI (Bug Verifier)
+#   qa-cursor.sh → cursor CLI (Bug Verifier)
 #   qa-opencode.sh → opencode CLI (Code Quality Reviewer)
 #   qa-smoke.sh → gemini CLI (Smoke Tester)
 #   qa-explorer.sh → claude CLI (Exploratory Tester)
@@ -33,6 +34,10 @@ case "$SCRIPT_NAME" in
         PERSONA="claudecode"
         CLI_TOOL="claude"
         ;;
+    qa-cursor.sh)
+        PERSONA="cursor"
+        CLI_TOOL="cursor"
+        ;;
     qa-opencode.sh)
         PERSONA="opencode"
         CLI_TOOL="opencode"
@@ -55,6 +60,7 @@ case "$SCRIPT_NAME" in
             gemini|smoke) CLI_TOOL="gemini" ;;
             claudecode|explorer) CLI_TOOL="claude" ;;
             opencode) CLI_TOOL="opencode" ;;
+            cursor) CLI_TOOL="cursor" ;;
         esac
 
         echo "$INPUT_PEEK"  # Pass through for later reading
@@ -206,6 +212,12 @@ else
         opencode)
             echo "$FULL_PROMPT" | opencode run 2>/dev/null || {
                 echo "Error: Failed to call opencode CLI" >&2
+                exit 1
+            }
+            ;;
+        cursor)
+            echo "$FULL_PROMPT" | cursor 2>/dev/null || {
+                echo "Error: Failed to call cursor CLI" >&2
                 exit 1
             }
             ;;

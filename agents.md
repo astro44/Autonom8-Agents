@@ -4,7 +4,7 @@ This is the single source of truth for all agent definitions in the Autonom8 sui
 
 ## Agent Lookup Order
 
-When a CLI wrapper (claude.sh, gemini.sh, codex.sh, opencode.sh) looks for an agent:
+When a CLI wrapper (claude.sh, gemini.sh, codex.sh, opencode.sh, cursor.sh) looks for an agent:
 
 1. **Provider overrides** (`.provider/overrides/agent-name.md`) - Provider-specific implementations
 2. **Shared definitions** (`agents/agent-name.md`) - Canonical agent specs
@@ -41,6 +41,7 @@ All agents listed here are available to all providers unless overridden.
 | devops-agent | `agents/devops/devops-agent.md` | Infrastructure, deployment, monitoring, incident response, RCA | ✅ Active |
 | decomposition-challenger-agent | `agents/core/decomposition-challenger-agent.md` | Challenges non-decomposed tickets, identifies cross-ticket dependencies | ✅ Active |
 | catalog-agent | `agents/core/catalog-agent.md` | Generates src/CATALOG.md from deployed ticket files_created metadata | ✅ Active |
+| sprint-architect-agent | `agents/core/sprint-architect-agent.md` | Creates SPRINT_TODO.json master plan with CSS registry, file ownership, execution order | ✅ Active |
 | monitor-agent | `agents/core/monitor-agent.md` | Observes systems and pipelines | 📋 Planned |
 | analyst-agent | `agents/core/analyst-agent.md` | Triages events and performs root-cause analysis | 📋 Planned |
 | reviewer-agent | `agents/core/reviewer-agent.md` | Validates fixes and ensures policy compliance | 📋 Planned |
@@ -63,6 +64,11 @@ All agents listed here are available to all providers unless overridden.
 - `code-generator-agent.md` - Code scaffolding
 - `refactor-agent.md` - Code refactoring specialist
 - `po-pm-agent.md` - Product Owner/PM - User stories and sprint planning
+
+### Cursor (.cursor/overrides/)
+- `diff-analyzer-agent.md` - Diff analysis and review
+- `pr-drafter-agent.md` - Pull request drafting
+- `quick-fix-agent.md` - Fast bug fixes
 
 ### OpenCode (.opencode/overrides/)
 - `diff-analyzer-agent.md` - Diff analysis and review
@@ -105,6 +111,7 @@ Each provider has a manifest symlink that points to this canonical file:
 - `.claude/claude.md` → `../agents.md`
 - `.gemini/gemini.md` → `../agents.md`
 - `.codex/codex.md` → `../agents.md`
+- `.cursor/cursor.md` → `../agents.md`
 - `.opencode/opencode.md` → `../agents.md`
 
 ---

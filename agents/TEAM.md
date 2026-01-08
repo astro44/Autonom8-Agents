@@ -1,8 +1,31 @@
 # Autonom8 IT Department Roster
 
-**Version:** 1.3.0
-**Last Updated:** 2025-12-14
-**Total Agents:** 32 Active
+**Version:** 1.4.0
+**Last Updated:** 2025-12-28
+**Total Agents:** 56 Active
+
+---
+
+## Persona Summary
+
+| Metric | Count | Notes |
+|--------|-------|-------|
+| Unique Persona Roles | 89 | Base persona names, excluding LLM variants |
+| Total Personas (All LLM Variants) | 368 | Includes Claude/Codex/Gemini/OpenCode/Cursor copies |
+
+---
+
+## Agent Summary
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| Leadership & Strategy | 2 | PM + PO |
+| Development | 18 | Core dev + platform specialists |
+| Quality Assurance & Testing | 15 | QA + visual + platform QA |
+| Operations & Infrastructure | 3 | Ops + DevOps + Path resolver |
+| Specialized Roles | 7 | Security, data, ML, geo, blockchain |
+| Improvement & Automation | 6 | Mining, docs, prompts, metrics |
+| Core Agents & Enforcement | 5 | Catalog, normalization, oversight |
 
 ---
 
@@ -26,8 +49,27 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 |------|------|----------|----------|----------------|
 | Senior Developer | Andrey | dev-agent | Multi (claudecode, codex, gemini, opencode) | Feature implementation, code reviews, technical execution |
 | UI/UX Engineer | Scott | ui-agent | Multi (flutter-claude, vanilla-codex, design-gemini, native-claude) | Frontend development, Flutter apps, responsive design |
+| UX Strategist | Lena | design-strategist-agent | Multi | UX strategy, information architecture, experience planning |
+| Design Foundation Lead | Tessa | design-foundation-agent | Multi | Design foundations, tokens, and UX guidelines |
+| Layout Template Engineer | Tanya | layout-template-agent | Multi | Layout scaffolding, reusable templates, responsive structure |
 | Solana Blockchain Developer | Raj | solana-rust-agent | Claude | Solana dApps, Rust/Anchor, on-chain programs, Wormhole integration |
 | EVM Blockchain Developer | Marcus | evm-solidity-agent | Claude | EVM smart contracts, Solidity, Hardhat/Foundry, CCIP/Wormhole integration |
+
+### Platform Dev Specialists
+
+| Role | Name | Agent ID | Provider | Responsibility |
+|------|------|----------|----------|----------------|
+| Web Developer | Josep | dev-web-agent | Multi | HTML/CSS/JS development, Playwright self-tests |
+| Flutter Developer | Preston | dev-flutter-agent | Multi | Flutter widgets, golden tests, flutter_test |
+| iOS Developer | Evelyn | dev-ios-agent | Multi | Swift/XCTest, snapshot testing |
+| Android Developer | Ravi | dev-android-agent | Multi | Kotlin, Espresso/Compose tests |
+| Java Developer | Anika | dev-java-agent | Multi | JUnit/Mockito backend development |
+| C# Developer | Martin | dev-csharp-agent | Multi | .NET/xUnit backend development |
+| Python Developer | Sofia | dev-python-agent | Multi | pytest-based backend development |
+| Go Developer | Enrique | dev-golang-agent | Multi | go test backend development |
+| Terraform Developer | Priya | dev-terraform-agent | Multi | Terratest IaC development |
+| Solidity Dev Engineer | Julien | dev-solidity-eth-agent | Multi | Foundry-based smart contract development |
+| Solana Dev Engineer | Rafael | dev-rust-solana-agent | Multi | Rust/Anchor program development |
 
 **Specializations:**
 - **Andrey**: Full-stack development, multi-phase workflow (research → plan → code → review)
@@ -45,6 +87,7 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Smoke Test Specialist | Puneet | smoke-test-agent | Claude | Fast critical path validation |
 | Regression Test Lead | Leo | regression-test-agent | Claude | Comprehensive regression testing |
 | Exploratory QA | Piyush | curious-qa-agent | Claude (temp: 0.9) | Creative bug hunting, edge case discovery |
+| Performance QA Lead | Parker | performance-qa-agent | Multi | Performance profiling, Lighthouse, runtime bottlenecks |
 | Integration QA Lead | Nina | integration-qa-agent | Multi | Browser testing, 404 detection, console error capture |
 | Visual QA Lead | Vera | visual-qa-agent | Multi | Tech-agnostic visual QA principles and coordination |
 | Visual QA Web | Maya | visual-qa-web-agent | Multi | Playwright DOM validation, CSS class consistency |
@@ -52,6 +95,7 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Visual QA iOS | Kira | visual-qa-ios-agent | Multi | iOS swift-snapshot-testing |
 | Backend QA Engineer | Felix | backend-qa-agent | Multi | Lambda, Docker, gRPC unit/integration testing |
 | Data QA Engineer | Daria | data-qa-agent | Multi | Schema validation, migration testing, rollback verification |
+| UI Test Generator | Owen | ui-test-gen-agent | Multi | Playwright test generation and fixture scaffolding |
 | Solana QA Engineer | Priya | solana-rust-qa-agent | Claude | Anchor testing, Wormhole integration testing |
 | EVM QA Engineer | Viktor | evm-solidity-qa-agent | Claude | Foundry/Hardhat testing, CCIP/Wormhole integration |
 
@@ -78,6 +122,7 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 |------|------|----------|----------|----------------|
 | Operations Engineer | Julio | ops-agent | Multi (gemini-monitor, codex-triage, claude-hotfix) | Production monitoring, incident response, performance tracking |
 | DevOps Engineer | Brandon | devops-agent | Multi (codex-planner, terraform-gen, gemini-deployer) | Infrastructure as Code, CI/CD, deployment orchestration |
+| Path Resolution Specialist | Riley | path-resolver-agent | Multi | Fixes 404s, document roots, and URL-to-filesystem mapping |
 
 **Operational Focus:**
 - **Julio**: 24/7 monitoring, incident triage (P0-P3), automated hotfixes, SLO compliance
@@ -91,8 +136,11 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 |------|------|----------|----------|----------------|
 | Security Engineer | Alex | security-agent | Multi (codex-code, claude-arch, gemini-compliance) | Security reviews, OWASP Top 10, compliance validation |
 | Data Engineer | Sam | data-agent | Multi (codex-etl, gemini-sql, claude-dashboards) | Analytics, ETL pipelines, dashboards, metrics reporting |
+| ML Lead | Omar | ml-agent | Multi | ML workflow leadership, research, training, deployment |
 | AI/ML Engineer | Ananya | ml-dev-agent | Multi (claude-ml-research, codex-training, gemini-optimization, opencode-deployment) | ML model development, training pipelines, MLOps, deployment |
 | AI/ML QA Engineer | Vikram | ml-qa-agent | Multi (claude-validation, codex-testing, gemini-benchmarking, opencode-monitoring) | Model validation, data quality testing, performance benchmarking, ML system monitoring |
+| Geospatial Specialist | Gina | geo-agent | Multi | Maps, geocoding, routing, and geospatial UX |
+| Blockchain Lead | Blake | blockchain-agent | Multi | Cross-chain blockchain architecture and smart contract oversight |
 
 **Security, Data & ML:**
 - **Alex**: Shift-left security, vulnerability scanning, SOC2/HIPAA/GDPR compliance
@@ -111,6 +159,7 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Documentation Specialist | Alfonso | doc-fixer | Multi | Updates and corrects documentation |
 | Prompt Optimization Engineer | Sophia | prompt-tuner | Multi | Optimizes prompts for cost/quality/latency |
 | Metrics & Analytics Lead | David | metrics-agent | Multi | Tracks metrics, SLOs, and costs |
+| Continuous Improvement Lead | Iris | improvement-agent | Multi | Continuous improvement workflows and operational tuning |
 
 **Continuous Improvement:**
 - Focus on automation, observability, and optimization
@@ -124,15 +173,16 @@ User Proposal → Arya (PM) → Warren (PO) → Development Team
 | Role | Name | Agent ID | Provider | Responsibility |
 |------|------|----------|----------|----------------|
 | Catalog Manager | Cleo | catalog-agent | Multi | Generates CATALOG.md with dependency tracking and validation status |
+| Sprint Architect | Atlas | sprint-architect-agent | Multi | Sprint-wide implementation planning, CSS registry, file ownership |
 | Decomposition Challenger | Drake | decomposition-challenger-agent | Multi | Challenges non-decomposed tickets, identifies cross-ticket dependencies |
 | Normalizer | Norm | normalizer-agent | Multi | Standardizes ticket formats, validates schema compliance |
-| Context Keeper | Cortex | context-keeper-agent | Multi | Maintains conversation context, manages agent memory |
+| Context Keeper | Nunya | context-keeper-agent | Multi | Maintains conversation context, manages agent memory |
 
 **Enforcement Pipeline:**
 - **Cleo**: Tracks all created artifacts with identifiers, companions, and validation status
 - **Drake**: Ensures tickets are properly decomposed before sprint execution
 - **Norm**: Enforces consistent ticket structure across all agents
-- **Cortex**: Preserves context across agent handoffs and long-running tasks
+- **Nunya**: Preserves context across agent handoffs and long-running tasks
 
 **Artifact Validation (go-autonom8/validation/):**
 - **15 Platform Validators**: web, flutter, ios, android, terraform, backend, data, solidity, solana, ai

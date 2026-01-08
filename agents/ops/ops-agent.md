@@ -1,5 +1,5 @@
 ---
-name: Sentinel
+name: Julio
 id: ops-agent
 provider: multi
 role: operations_specialist

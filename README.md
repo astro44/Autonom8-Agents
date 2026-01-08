@@ -8,7 +8,7 @@ This repository contains agent definitions optimized for different AI providers.
 
 ## Agent Library
 
-### 12 Agents Across 4 Providers
+### 16 Agents Across 5 Providers
 
 #### Claude Agents (Deep Analysis)
 - **brutal-critic-agent** - Aggressive code review and security analysis
@@ -24,6 +24,12 @@ This repository contains agent definitions optimized for different AI providers.
 - **code-generator-agent** - Feature implementation from specifications
 - **refactor-agent** - Code quality improvement
 - **api-builder-agent** - Complete API design and implementation
+- **po-pm-agent** - Product Owner/PM - User stories and sprint planning
+
+#### Cursor Agents (Fast Local Processing)
+- **pr-drafter-agent** - PR descriptions and commit messages
+- **diff-analyzer-agent** - Security and performance diff analysis
+- **quick-fix-agent** - Automated linting and style fixes
 
 #### OpenCode Agents (Fast Local Processing)
 - **pr-drafter-agent** - PR descriptions and commit messages
@@ -33,10 +39,11 @@ This repository contains agent definitions optimized for different AI providers.
 ## Structure
 
 ```
-.claude/agents/      # Claude-optimized agents
-.gemini/agents/      # Gemini-optimized agents
-.codex/agents/       # Codex/GPT-optimized agents
-.opencode/agents/    # Open-source model agents
+.claude/overrides/   # Claude-specific overrides
+.codex/overrides/    # Codex/GPT-specific overrides
+.cursor/overrides/   # Cursor-specific overrides
+.gemini/overrides/   # Gemini-specific overrides
+.opencode/overrides/ # Open-source model overrides
 agent-index.json     # Generated agent index
 ```
 

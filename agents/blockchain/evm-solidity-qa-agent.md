@@ -1,5 +1,5 @@
 ---
-name: evm-solidity-qa-agent
+name: Viktor
 role: EVM Smart Contract QA Engineer (Foundry/Hardhat Testing)
 version: 1.0.0
 model: claude

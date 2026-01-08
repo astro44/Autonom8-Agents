@@ -4,8 +4,8 @@
 # C = Consulted (provides input before decision)
 # I = Informed (kept in the loop after decision)
 
-version: 1.3.0
-last_updated: 2025-12-14
+version: 1.4.0
+last_updated: 2025-12-28
 
 # ============================================
 # FEATURE DEVELOPMENT WORKFLOWS
@@ -37,9 +37,122 @@ ui_feature_implementation:
     - ops-agent
     - pm-agent
 
+web_feature_implementation:
+  description: "Web platform feature development (HTML/CSS/JS + Playwright)"
+  responsible: dev-web-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - ui-agent
+    - security-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+flutter_feature_implementation:
+  description: "Flutter feature development (widgets + golden tests)"
+  responsible: dev-flutter-agent
+  accountable: po-agent
+  consulted:
+    - ui-agent
+    - dev-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+ios_feature_implementation:
+  description: "iOS feature development (Swift/XCTest + snapshots)"
+  responsible: dev-ios-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - ui-agent
+    - security-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+android_feature_implementation:
+  description: "Android feature development (Kotlin/Espresso/Compose)"
+  responsible: dev-android-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - ui-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+java_backend_implementation:
+  description: "Java backend feature development (JUnit/Mockito)"
+  responsible: dev-java-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - security-agent
+    - devops-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+csharp_backend_implementation:
+  description: "C#/.NET backend feature development (xUnit)"
+  responsible: dev-csharp-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - security-agent
+    - devops-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+python_backend_implementation:
+  description: "Python backend feature development (pytest)"
+  responsible: dev-python-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - security-agent
+    - devops-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+golang_backend_implementation:
+  description: "Go backend feature development (go test)"
+  responsible: dev-golang-agent
+  accountable: po-agent
+  consulted:
+    - dev-agent
+    - security-agent
+    - devops-agent
+  informed:
+    - qa-agent
+    - ops-agent
+    - pm-agent
+
+terraform_module_development:
+  description: "Terraform module development (Terratest)"
+  responsible: dev-terraform-agent
+  accountable: devops-agent
+  consulted:
+    - security-agent
+    - ops-agent
+  informed:
+    - pm-agent
+    - po-agent
+
 solana_dapp_development:
   description: "Solana blockchain app development (Rust/Anchor, on-chain programs)"
-  responsible: solana-rust-agent
+  responsible: dev-rust-solana-agent
   accountable: po-agent
   consulted:
     - security-agent
@@ -51,7 +164,7 @@ solana_dapp_development:
 
 evm_smart_contract_development:
   description: "EVM smart contract development (Solidity, Hardhat/Foundry)"
-  responsible: evm-solidity-agent
+  responsible: dev-solidity-eth-agent
   accountable: po-agent
   consulted:
     - security-agent

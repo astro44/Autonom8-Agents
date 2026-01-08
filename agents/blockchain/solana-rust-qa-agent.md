@@ -1,5 +1,5 @@
 ---
-name: solana-rust-qa-agent
+name: Priya
 role: Solana Blockchain QA Engineer (Rust/Anchor Testing)
 version: 1.0.0
 model: claude

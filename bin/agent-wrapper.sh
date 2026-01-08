@@ -33,7 +33,7 @@ Examples:
   PROVIDER=gemini $0 run smoke-test-agent
 
 Environment:
-  PROVIDER      Provider name (claude|gemini|codex|opencode)
+  PROVIDER      Provider name (claude|gemini|codex|opencode|cursor)
   MODULE_ROOT   Path to Autonom8-Agents module
 EOF
   exit 1
@@ -110,7 +110,7 @@ run_agent() {
   fi
 
   # Execute agent using appropriate CLI
-  # This is a placeholder - actual execution would use claude, gemini, codex, or opencode CLI
+  # This is a placeholder - actual execution would use claude, gemini, codex, opencode, or cursor CLI
   echo "[INFO] Executing $PROVIDER agent: $agent_id" >&2
   echo "[INFO] Spec file: $spec_file" >&2
   echo "[INFO] Arguments: $*" >&2
@@ -131,6 +131,10 @@ run_agent() {
     opencode)
       # opencode run --spec "$spec_file" "$@"
       echo "[EXEC] opencode run --spec \"$spec_file\" $*"
+      ;;
+    cursor)
+      # cursor run --spec "$spec_file" "$@"
+      echo "[EXEC] cursor run --spec \"$spec_file\" $*"
       ;;
     *)
       echo "[ERROR] Unknown provider: $PROVIDER" >&2

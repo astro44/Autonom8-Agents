@@ -937,6 +937,196 @@ structure_mutations:
       auto_fixable: false
 
 # ============================================================================
+# SELECTOR/BINDING COVERAGE VALIDATION
+# Ensures code that queries for elements/widgets actually finds them.
+# Catches producer/consumer mismatches where one ticket creates elements
+# and another ticket queries for them with wrong selectors.
+# ============================================================================
+selector_coverage:
+
+  web:
+    description: "Validate JS selectors find elements in DOM"
+    detection_patterns:
+      # querySelector patterns
+      - pattern: 'querySelector\([''"]([^''"]+)[''"]\)'
+        type: "css_selector"
+      - pattern: 'querySelectorAll\([''"]([^''"]+)[''"]\)'
+        type: "css_selector"
+      - pattern: 'getElementById\([''"]([^''"]+)[''"]\)'
+        type: "id_selector"
+      - pattern: 'getElementsByClassName\([''"]([^''"]+)[''"]\)'
+        type: "class_selector"
+      # Data attribute patterns
+      - pattern: '\[data-([a-z-]+)(?:=[''"]([^''"]*)[''"])?\]'
+        type: "data_attribute"
+    validation:
+      method: "selector_coverage_check"
+      description: "Extract selectors from JS, verify matching elements exist in HTML"
+    error_category: "selector_mismatch"
+    severity: "HIGH"
+    auto_fixable: true
+
+  flutter:
+    description: "Validate Key references find widgets"
+    detection_patterns:
+      - pattern: "Key\\(['\"]([^'\"]+)['\"]\\)"
+        type: "widget_key"
+      - pattern: "ValueKey\\(['\"]([^'\"]+)['\"]\\)"
+        type: "value_key"
+      - pattern: "find\\.byKey\\(Key\\(['\"]([^'\"]+)['\"]\\)\\)"
+        type: "finder_key"
+    validation:
+      method: "key_coverage_check"
+      description: "Extract Key references from tests, verify widgets with those keys exist"
+    error_category: "selector_mismatch"
+    severity: "HIGH"
+    auto_fixable: false
+
+  ios:
+    description: "Validate view references find views"
+    detection_patterns:
+      - pattern: 'viewWithTag\((\d+)\)'
+        type: "view_tag"
+      - pattern: '@IBOutlet\s+\w+\s+var\s+(\w+)'
+        type: "outlet"
+      - pattern: 'accessibilityIdentifier\s*==\s*[''"]([^''"]+)[''"]'
+        type: "accessibility_id"
+    validation:
+      method: "view_binding_check"
+      description: "Verify IBOutlet connections and view tag references"
+    error_category: "selector_mismatch"
+    severity: "HIGH"
+    auto_fixable: false
+
+  android:
+    description: "Validate view ID references find views"
+    detection_patterns:
+      - pattern: 'findViewById\(R\.id\.(\w+)\)'
+        type: "view_id"
+      - pattern: 'binding\.(\w+)'
+        type: "view_binding"
+      - pattern: '@\+id/(\w+)'
+        type: "xml_id_definition"
+    validation:
+      method: "view_id_check"
+      description: "Verify R.id references have corresponding XML definitions"
+    error_category: "selector_mismatch"
+    severity: "HIGH"
+    auto_fixable: false
+
+  solidity:
+    description: "Validate contract interface references"
+    detection_patterns:
+      - pattern: 'interface\s+(\w+)'
+        type: "interface_def"
+      - pattern: '(\w+)\(address\)'
+        type: "interface_cast"
+    validation:
+      method: "interface_coverage_check"
+      description: "Verify interface casts have matching interface definitions"
+    error_category: "selector_mismatch"
+    severity: "MEDIUM"
+    auto_fixable: false
+
+# ============================================================================
+# DATA FLOW VALIDATION
+# Validates end-to-end data flow from source to rendered output.
+# Catches bugs where data exists but never reaches the UI due to
+# selector mismatches, missing bindings, or broken pipelines.
+# ============================================================================
+data_flow_validation:
+
+  web:
+    description: "Validate data from JSON/API reaches DOM elements"
+    flow_definition:
+      source_patterns:
+        - pattern: 'fetch\([''"]([^''"]+)[''"]\)'
+          type: "fetch_url"
+        - pattern: 'import.*from\s+[''"]([^''"]+\.json)[''"]'
+          type: "json_import"
+      sink_patterns:
+        - pattern: '\[data-([a-z-]+)\]'
+          type: "data_attribute_target"
+        - pattern: '\.textContent\s*='
+          type: "text_update"
+        - pattern: '\.innerHTML\s*='
+          type: "html_update"
+    validation:
+      method: "data_flow_trace"
+      checks:
+        - "source_exists"           # Data file/endpoint exists
+        - "selector_finds_element"  # Target selector matches DOM element
+        - "value_rendered"          # Non-default value appears in output
+      description: "Trace data from source through code to rendered output"
+    error_category: "data_flow_broken"
+    severity: "HIGH"
+    auto_fixable: true
+
+  flutter:
+    description: "Validate state data reaches widgets"
+    flow_definition:
+      source_patterns:
+        - pattern: 'Provider\.of<(\w+)>'
+          type: "provider"
+        - pattern: 'BlocProvider\.of<(\w+)>'
+          type: "bloc"
+        - pattern: 'context\.read<(\w+)>'
+          type: "riverpod"
+      sink_patterns:
+        - pattern: 'Text\(([^)]+)\)'
+          type: "text_widget"
+        - pattern: 'child:\s*(\w+)'
+          type: "widget_child"
+    validation:
+      method: "state_flow_trace"
+      description: "Verify state providers connect to consuming widgets"
+    error_category: "data_flow_broken"
+    severity: "HIGH"
+    auto_fixable: false
+
+  ios:
+    description: "Validate model data reaches views"
+    flow_definition:
+      source_patterns:
+        - pattern: '@Published\s+var\s+(\w+)'
+          type: "published_property"
+        - pattern: '@State\s+var\s+(\w+)'
+          type: "state_property"
+      sink_patterns:
+        - pattern: 'Text\(([^)]+)\)'
+          type: "text_view"
+        - pattern: '\.text\s*='
+          type: "label_assignment"
+    validation:
+      method: "binding_flow_trace"
+      description: "Verify @Published/@State properties bind to views"
+    error_category: "data_flow_broken"
+    severity: "HIGH"
+    auto_fixable: false
+
+  android:
+    description: "Validate ViewModel data reaches Compose/XML"
+    flow_definition:
+      source_patterns:
+        - pattern: 'MutableLiveData<(\w+)>'
+          type: "live_data"
+        - pattern: 'MutableStateFlow<(\w+)>'
+          type: "state_flow"
+        - pattern: 'mutableStateOf\('
+          type: "compose_state"
+      sink_patterns:
+        - pattern: 'Text\(([^)]+)\)'
+          type: "compose_text"
+        - pattern: 'android:text="@\{([^}]+)\}"'
+          type: "xml_binding"
+    validation:
+      method: "viewmodel_flow_trace"
+      description: "Verify ViewModel state flows to UI components"
+    error_category: "data_flow_broken"
+    severity: "HIGH"
+    auto_fixable: false
+
+# ============================================================================
 # VALIDATION SEVERITY LEVELS
 # ============================================================================
 severity_levels:
@@ -1057,3 +1247,88 @@ bug_templates:
       1. For development: Add to .env or .env.local
       2. For production: Add to deployment config or CI/CD secrets
       3. Document in .env.example for team awareness
+
+  selector_mismatch:
+    title: "Selector Mismatch: {selector} finds 0 elements"
+    category: "selector_mismatch"
+    auto_fixable: true
+    severity: "HIGH"
+    description: |
+      Code uses selector that matches no elements:
+
+      Selector: {selector}
+      Found in: {source_file}:{line_number}
+      Selector type: {selector_type} (querySelector, getElementById, Key, R.id, etc.)
+
+      Expected element with: {expected_attribute}
+      Actual elements found: 0
+
+      This typically happens when:
+      - Producer ticket created elements with different attribute names
+      - Consumer ticket uses wrong selector to query for elements
+      - Attribute naming contract not coordinated between tickets
+
+    fix_suggestion: |
+      Option 1: Fix the HTML/Widget to use expected attribute
+        Change: {actual_in_html}
+        To: {expected_attribute}
+
+      Option 2: Fix the code to use actual attribute
+        Change: {selector}
+        To: {actual_selector}
+
+      Root cause: Tickets {producer_ticket} and {consumer_ticket} used different
+      attribute naming conventions. Add data_contracts to proposal to prevent.
+
+  data_flow_broken:
+    title: "Data Flow Broken: {data_key} exists in source but shows {rendered_value} in UI"
+    category: "data_flow_broken"
+    auto_fixable: true
+    severity: "HIGH"
+    description: |
+      Data exists at source but doesn't reach UI correctly:
+
+      Data source: {source_file}
+      Data key: {data_key}
+      Source value: {source_value}
+
+      Target selector: {target_selector}
+      Rendered value: {rendered_value} (expected: {expected_rendered})
+
+      Data flow trace:
+      1. Source: {source_file} has {data_key} = {source_value} ✓
+      2. Load: {loader_file}:{loader_line} fetches data ✓
+      3. Query: {query_file}:{query_line} uses selector {target_selector}
+      4. Match: Selector finds {match_count} elements
+      5. Render: Element shows "{rendered_value}" instead of "{expected_rendered}"
+
+      Break point: Step {break_step} - {break_reason}
+
+    fix_suggestion: |
+      The data flow breaks at: {break_description}
+
+      Fix: {fix_action}
+
+  default_value_displayed:
+    title: "Default Value: {element_selector} shows placeholder instead of data"
+    category: "data_flow_broken"
+    auto_fixable: true
+    severity: "HIGH"
+    description: |
+      Element displays default/placeholder value instead of actual data:
+
+      Element: {element_selector}
+      Current value: "{current_value}" (placeholder)
+      Expected value: Non-default data from {data_source}
+
+      Possible causes:
+      - Data loading failed silently
+      - Selector mismatch (code queries for element that doesn't exist)
+      - Initialization order (code runs before DOM ready)
+      - Data key mismatch (code looks for wrong key in data object)
+
+    fix_suggestion: |
+      1. Verify selector "{element_selector}" matches an element in DOM
+      2. Verify data loading succeeds (check network tab, console)
+      3. Verify data key in code matches key in data source
+      4. Verify update code targets correct element

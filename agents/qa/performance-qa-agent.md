@@ -1,5 +1,5 @@
 ---
-name: Velocity
+name: Parker
 id: performance-qa-agent
 provider: multi
 role: performance_specialist
