@@ -142,6 +142,14 @@ Existing patterns:
 {
   "ticket_id": "TICKET-XXX",
   "platform": "web|flutter|ios|android",
+  "binding_decisions": [
+    {
+      "decision": "DO_NOTHING|USE_EXISTING|CREATE_NEW|AVOID",
+      "target": "src/js/main.js",
+      "reason": "main.js is the established entry point, do not create index.js",
+      "enforcement": "BLOCK"
+    }
+  ],
   "asset_audit": {
     "design_system_exists": true|false,
     "relevant_existing_components": [
@@ -261,6 +269,27 @@ Existing patterns:
 | "Add 9 metrics" | MetricCard exists | "Consolidate to 3, use existing MetricCard" |
 | "New color scheme" | design-system.json exists | "Extend existing tokens" |
 | "New color scheme" | No design system | "BLOCKER: Create design-system.json first" |
+
+**Binding Decisions (P1.2 - CRITICAL)**
+
+Binding decisions are enforceable directives that BLOCK implementation if violated. Use them for decisions that MUST NOT be ignored.
+
+| Decision | When to Use | Example |
+|----------|-------------|---------|
+| `DO_NOTHING` | File exists and should NOT be modified | "main.js handles initialization, don't touch it" |
+| `USE_EXISTING` | MUST use existing asset, not create new | "Use MetricCard from src/components" |
+| `AVOID` | Pattern/file MUST NOT be created/used | "Don't create src/index.js - conflicts with main.js" |
+| `CREATE_NEW` | MUST create new (no suitable existing option) | "Create new BeforeAfter component (none exists)" |
+
+**Enforcement Levels:**
+- `"BLOCK"` - Implementation will be REJECTED if this decision is violated
+- `"WARN"` - Warning issued but implementation proceeds
+
+**When to Use Binding Decisions:**
+1. Entry point conflicts (main.js vs index.js)
+2. Component duplication prevention (use existing MetricCard)
+3. File pattern avoidance (don't create deprecated patterns)
+4. Critical architecture decisions that cannot be violated
 
 ---
 
@@ -319,6 +348,14 @@ Existing patterns:
 {
   "ticket_id": "TICKET-XXX",
   "platform": "web|flutter|ios|android",
+  "binding_decisions": [
+    {
+      "decision": "DO_NOTHING|USE_EXISTING|CREATE_NEW|AVOID",
+      "target": "src/js/main.js",
+      "reason": "main.js is the established entry point, do not create index.js",
+      "enforcement": "BLOCK"
+    }
+  ],
   "asset_audit": {
     "design_system_exists": true|false,
     "relevant_existing_components": [
@@ -438,6 +475,27 @@ Existing patterns:
 | "Add 9 metrics" | MetricCard exists | "Consolidate to 3, use existing MetricCard" |
 | "New color scheme" | design-system.json exists | "Extend existing tokens" |
 | "New color scheme" | No design system | "BLOCKER: Create design-system.json first" |
+
+**Binding Decisions (P1.2 - CRITICAL)**
+
+Binding decisions are enforceable directives that BLOCK implementation if violated. Use them for decisions that MUST NOT be ignored.
+
+| Decision | When to Use | Example |
+|----------|-------------|---------|
+| `DO_NOTHING` | File exists and should NOT be modified | "main.js handles initialization, don't touch it" |
+| `USE_EXISTING` | MUST use existing asset, not create new | "Use MetricCard from src/components" |
+| `AVOID` | Pattern/file MUST NOT be created/used | "Don't create src/index.js - conflicts with main.js" |
+| `CREATE_NEW` | MUST create new (no suitable existing option) | "Create new BeforeAfter component (none exists)" |
+
+**Enforcement Levels:**
+- `"BLOCK"` - Implementation will be REJECTED if this decision is violated
+- `"WARN"` - Warning issued but implementation proceeds
+
+**When to Use Binding Decisions:**
+1. Entry point conflicts (main.js vs index.js)
+2. Component duplication prevention (use existing MetricCard)
+3. File pattern avoidance (don't create deprecated patterns)
+4. Critical architecture decisions that cannot be violated
 
 ---
 

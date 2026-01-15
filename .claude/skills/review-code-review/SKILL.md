@@ -14,7 +14,7 @@ Quick code review checking for common issues.
   "project_dir": "/path/to/project",
   "ticket_id": "TICKET-XXX",
   "files": ["src/components/Foo.js"],
-  "checks": ["security", "design_tokens", "accessibility"]
+  "checks": ["security", "design_tokens", "accessibility", "data_contracts"]
 }
 ```
 
@@ -47,6 +47,76 @@ Quick code review checking for common issues.
 | Icon without `aria-label` | MEDIUM | Add label for screen readers |
 | Non-semantic elements for buttons | HIGH | Use `<button>` |
 | Missing `role` on interactive elements | MEDIUM | Add appropriate role |
+
+### P4.2: Data Contracts (NEW)
+
+Validates that `data-*` attributes referenced in JS/CSS exist in HTML.
+
+| Pattern | Severity | Fix |
+|---------|----------|-----|
+| `data-*` in JS not in HTML | HIGH | Add attribute to HTML or remove JS reference |
+| CSS selector `[data-*]` not in HTML | HIGH | Add element or remove selector |
+| `querySelector('[data-xyz]')` with no match | HIGH | Verify selector exists in DOM |
+| `document.querySelectorAll('[data-*]')` returning empty | MEDIUM | Check HTML has elements |
+| JS expects `.dataset.xyz` but element lacks `data-xyz` | HIGH | Add data attribute to HTML |
+
+**Cross-Reference Validation:**
+
+When reviewing UI components, cross-reference:
+1. All `data-*` attributes used in JS exist in HTML
+2. All CSS selectors targeting `[data-*]` have matching HTML elements
+3. Cross-reference against `CATALOG_PENDING.json` identifiers
+
+**Detection Patterns:**
+```javascript
+// JS patterns that reference data-* attributes
+const DATA_JS_PATTERNS = [
+  /querySelector\(['"]?\[data-([^\]]+)\]/g,       // querySelector('[data-xyz]')
+  /querySelectorAll\(['"]?\[data-([^\]]+)\]/g,   // querySelectorAll('[data-xyz]')
+  /\.dataset\.(\w+)/g,                            // element.dataset.xyz
+  /getAttribute\(['"]data-([^'"]+)['"]\)/g,       // getAttribute('data-xyz')
+];
+
+// CSS patterns that reference data-* attributes
+const DATA_CSS_PATTERNS = [
+  /\[data-([^\]]+)\]/g,                           // [data-xyz]
+  /\[data-([^\]]+)=['"][^'"]*['"]\]/g,           // [data-xyz="value"]
+];
+```
+
+**Validation Output:**
+```json
+{
+  "category": "data_contracts",
+  "severity": "HIGH",
+  "message": "JS references [data-metric-card] but no matching element in HTML",
+  "evidence": {
+    "js_file": "src/js/metrics.js",
+    "js_line": 42,
+    "selector": "[data-metric-card]",
+    "html_files_checked": ["src/index.html", "src/pages/dashboard.html"],
+    "matches_found": 0
+  },
+  "fix": "Add `data-metric-card` attribute to element in HTML, or remove JS reference"
+}
+```
+
+**When HTML Not Available:**
+
+If JS references `data-*` but HTML files are not provided, flag as:
+```json
+{
+  "category": "data_contracts",
+  "severity": "HIGH",
+  "message": "Cannot verify data-* contract - HTML not provided",
+  "evidence": {
+    "js_file": "src/js/component.js",
+    "data_attributes_used": ["data-chart", "data-metric-card", "data-toggle"],
+    "html_files_provided": []
+  },
+  "fix": "Provide HTML files to verify data-* contracts"
+}
+```
 
 ## Output Format
 
@@ -118,9 +188,10 @@ Quick code review checking for common issues.
   "ticket_id": "TICKET-OXY-002",
   "files": [
     "src/components/Dashboard.jsx",
-    "src/styles/dashboard.css"
+    "src/styles/dashboard.css",
+    "src/pages/dashboard.html"
   ],
-  "checks": ["security", "design_tokens", "accessibility"]
+  "checks": ["security", "design_tokens", "accessibility", "data_contracts"]
 }
 ```
 

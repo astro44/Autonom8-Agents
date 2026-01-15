@@ -1,0 +1,126 @@
+name: preservation-check
+description: Verify static content preservation after JavaScript/component initialization. Detects destructive patterns that overwrite HTML/widget content.
+version: 1.0.0
+author: Autonom8 Core Team
+created: 2026-01-13
+rca_reference: RCA_OVERWRITTEN_JAN13.md
+
+# When to trigger this skill
+triggers:
+  - on: implementation_complete
+    platforms: [web, flutter, ios, android]
+  - on: code_review
+    platforms: [web, flutter, ios, android]
+  - on: pre_integration
+    platforms: [web, flutter, ios, android]
+
+# Skill is blocking - ticket cannot progress if violations found
+blocking: true
+
+# Platform-specific checks
+checks:
+  web:
+    - id: innerHTML_pattern_scan
+      description: Detect destructive innerHTML = patterns
+      patterns:
+        - pattern: "container\\.innerHTML\\s*=\\s*[^=]"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Use container.classList.add() for state changes or check for existing content first"
+
+        - pattern: "this\\.element\\.innerHTML\\s*=\\s*[^=]"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Check if structure exists: if (!this.element.querySelector('[data-*]')) { ... }"
+
+        - pattern: "innerHTML\\s*=\\s*[`'\"]<div[^>]*class=\"[^\"]*loading"
+          rule_id: AC-INIT-2
+          severity: error
+          suggestion: "Use container.classList.add('loading') instead of innerHTML replacement"
+
+    - id: container_dimension_verify
+      description: Verify map/chart containers have explicit height
+      selectors:
+        - selector: "[data-map-container]"
+          min_height: 100
+        - selector: ".mapbox-container"
+          min_height: 100
+        - selector: "[data-chart-container]"
+          min_height: 50
+      severity: warning
+
+    - id: dom_snapshot_comparison
+      description: Compare element count before/after init to detect destruction
+      method: browser_verification
+      check: "after_element_count >= before_element_count"
+      severity: error
+
+  flutter:
+    - id: widget_state_clearing_scan
+      description: Detect destructive children.clear() patterns
+      patterns:
+        - pattern: "children\\.clear\\(\\)"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Use keys to preserve widget identity or update in place"
+
+        - pattern: "setState\\s*\\(\\s*\\(\\)\\s*\\{[^}]*=\\s*\\[\\s*\\]"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Update existing items in place instead of replacing with empty list"
+
+    - id: constraint_verification
+      description: Verify containers have explicit constraints
+      check: "Container widgets for maps/charts have explicit height"
+      severity: warning
+
+  ios:
+    - id: subview_bulk_removal_scan
+      description: Detect bulk removeFromSuperview patterns
+      patterns:
+        - pattern: "subviews\\.forEach\\s*\\{[^}]*removeFromSuperview"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Use viewWithTag() to update specific subviews"
+
+        - pattern: "arrangedSubviews\\.forEach\\s*\\{[^}]*removeFromSuperview"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Update subviews by tag or identifier"
+
+    - id: frame_explicit_check
+      description: Verify map/chart views have explicit constraints
+      check: "Auto Layout constraints set for content views"
+      severity: warning
+
+  android:
+    - id: removeAllViews_scan
+      description: Detect destructive removeAllViews patterns
+      patterns:
+        - pattern: "removeAllViews\\(\\)"
+          rule_id: AC-INIT-1
+          severity: error
+          suggestion: "Use findViewById() to update specific views"
+
+# Output format
+output:
+  format: json
+  schema:
+    violations:
+      type: array
+      items:
+        file: string
+        line: number
+        rule_id: string
+        pattern: string
+        severity: string
+        suggestion: string
+    passed: boolean
+    platform: string
+    scan_time_ms: number
+
+# Integration with other skills
+integrates_with:
+  - qa-integration-check  # Run after integration check
+  - check-imports         # Run with import validation
+  - deploy-check          # Block deploy if violations found

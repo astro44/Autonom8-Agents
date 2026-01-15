@@ -1005,6 +1005,63 @@ This is critical because:
 }
 ```
 
+### intended_use Requirements (CRITICAL - P1.1)
+
+**Your implementation will be REJECTED if `intended_use` is invalid.**
+
+The `intended_use` field describes WHAT the file does and HOW to use it, not where it came from.
+
+#### Rejection Criteria
+
+| Pattern | Why Rejected | Example |
+|---------|--------------|---------|
+| Contains ticket ID | Useless - says origin, not purpose | `"Created by TICKET-123"` |
+| Too short (<20 chars) | Not descriptive enough | `"New component"` |
+| Generic phrases | Lazy description | `"Modified by TICKET-X"`, `"Implementation of feature"` |
+| Empty | No description at all | `""` |
+
+#### Rejected Phrases (auto-fail)
+
+- `"Created by..."`, `"Modified by..."`, `"Added for..."`
+- `"New file for..."`, `"Updated for..."`
+- `"File for ticket..."`, `"Implementation of..."`, `"Implements ticket..."`
+- Any string containing `TICKET-`, `BUG-`, `PROP-`, etc.
+
+#### Valid Examples
+
+```json
+// ✅ CORRECT - Describes functionality and usage
+{
+  "path": "src/components/impact/AnimatedCounter.js",
+  "intended_use": "Import { initAnimatedCounters } from './AnimatedCounter.js'; call after DOMContentLoaded to animate [data-animated-counter] elements with easing and reduced-motion support"
+}
+
+// ✅ CORRECT - Explains what it does
+{
+  "path": "src/styles/components/metric-card.css",
+  "intended_use": "Link in HTML head to style .metric-card components with hover states, responsive layout, and design token colors"
+}
+
+// ❌ WRONG - Just says where it came from
+{
+  "path": "src/components/MyComponent.js",
+  "intended_use": "Created by TICKET-OXY-003"
+}
+
+// ❌ WRONG - Too generic
+{
+  "path": "src/utils/helpers.js",
+  "intended_use": "New file for feature"
+}
+```
+
+#### What to Include
+
+A good `intended_use` answers:
+1. **What does this file do?** (e.g., "Fetches metrics data via REST API")
+2. **How do you use it?** (e.g., "Import { loadMetrics } and call on DOMContentLoaded")
+3. **What does it depend on?** (e.g., "Requires Mapbox GL JS to be loaded globally")
+
 ### Commit Message
 [{persona}] {Brief description}
 
@@ -1162,6 +1219,63 @@ This is critical because:
   "notes": "Verified existing implementation meets AC-1, AC-2"
 }
 ```
+
+### intended_use Requirements (CRITICAL - P1.1)
+
+**Your implementation will be REJECTED if `intended_use` is invalid.**
+
+The `intended_use` field describes WHAT the file does and HOW to use it, not where it came from.
+
+#### Rejection Criteria
+
+| Pattern | Why Rejected | Example |
+|---------|--------------|---------|
+| Contains ticket ID | Useless - says origin, not purpose | `"Created by TICKET-123"` |
+| Too short (<20 chars) | Not descriptive enough | `"New component"` |
+| Generic phrases | Lazy description | `"Modified by TICKET-X"`, `"Implementation of feature"` |
+| Empty | No description at all | `""` |
+
+#### Rejected Phrases (auto-fail)
+
+- `"Created by..."`, `"Modified by..."`, `"Added for..."`
+- `"New file for..."`, `"Updated for..."`
+- `"File for ticket..."`, `"Implementation of..."`, `"Implements ticket..."`
+- Any string containing `TICKET-`, `BUG-`, `PROP-`, etc.
+
+#### Valid Examples
+
+```json
+// ✅ CORRECT - Describes functionality and usage
+{
+  "path": "src/components/impact/AnimatedCounter.js",
+  "intended_use": "Import { initAnimatedCounters } from './AnimatedCounter.js'; call after DOMContentLoaded to animate [data-animated-counter] elements with easing and reduced-motion support"
+}
+
+// ✅ CORRECT - Explains what it does
+{
+  "path": "src/styles/components/metric-card.css",
+  "intended_use": "Link in HTML head to style .metric-card components with hover states, responsive layout, and design token colors"
+}
+
+// ❌ WRONG - Just says where it came from
+{
+  "path": "src/components/MyComponent.js",
+  "intended_use": "Created by TICKET-OXY-003"
+}
+
+// ❌ WRONG - Too generic
+{
+  "path": "src/utils/helpers.js",
+  "intended_use": "New file for feature"
+}
+```
+
+#### What to Include
+
+A good `intended_use` answers:
+1. **What does this file do?** (e.g., "Fetches metrics data via REST API")
+2. **How do you use it?** (e.g., "Import { loadMetrics } and call on DOMContentLoaded")
+3. **What does it depend on?** (e.g., "Requires Mapbox GL JS to be loaded globally")
 
 ### Commit Message
 [{persona}] {Brief description}

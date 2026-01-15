@@ -13,11 +13,17 @@ Run tests for a ticket with intelligent port detection and server reuse.
 {
   "ticket_id": "TICKET-XXX",
   "project_dir": "/path/to/project",
+  "spec_path": "tests/my-component.spec.js",
   "scope": "ticket|changed|all",
   "bail": true,
   "fix": false
 }
 ```
+
+**CRITICAL: Test Isolation**
+- If `spec_path` is provided, run ONLY that specific test file
+- If `scope: "ticket"`, derive spec_path from ticket metadata `scope.test_requirements.spec_path`
+- NEVER run `npm test` or `npx playwright test` without a file filter (runs ALL tests)
 
 ## Behavior
 
@@ -99,14 +105,44 @@ PLAYWRIGHT_BASE_URL=http://localhost:8080 npx playwright test tests/
    SERVER_PID=$!
    ```
 
-3. **Run tests with proper URL**
+3. **Run tests with proper URL and SPECIFIC FILE (CRITICAL)**
    ```bash
-   PLAYWRIGHT_BASE_URL=http://localhost:$PORT npx playwright test --reporter=json
+   # ALWAYS specify the test file - NEVER run all tests
+   PLAYWRIGHT_BASE_URL=http://localhost:$PORT npx playwright test $SPEC_PATH --reporter=json
+
+   # Example with spec_path from input:
+   PLAYWRIGHT_BASE_URL=http://localhost:8080 npx playwright test tests/my-component.spec.js --reporter=json
+
+   # WRONG - DO NOT DO THIS (runs ALL tests, causes cross-ticket pollution):
+   # npx playwright test --reporter=json
    ```
 
 4. **Parse test results and return JSON**
 
 5. **Do NOT kill server if it was reused** (preserve for next test run)
+
+## Status Determination (CRITICAL)
+
+**Exit codes determine retry behavior - use carefully:**
+
+| Pass Rate | Status | Exit Code | Behavior |
+|-----------|--------|-----------|----------|
+| 100% | `success` | 0 | Proceed to next step |
+| ≥ 66% | `partial` | 0 | Allow self-healing/review |
+| < 66% | `failure` | 1 | Trigger retry |
+| 0% | `failure` | 1 | Trigger retry |
+| Server/setup error | `failure` | 1 | Trigger retry |
+
+**Why this matters:**
+- Exit code 1 triggers retry loops (expensive, time-consuming)
+- `partial` with exit 0 allows the workflow to continue with self-healing
+- Tests failing due to assertion issues (not bugs) should be `partial`
+
+**Calculate pass rate:**
+```
+pass_rate = passed / (passed + failed) * 100
+# Skipped tests do NOT count against pass rate
+```
 
 ## Error Handling
 
@@ -114,7 +150,9 @@ PLAYWRIGHT_BASE_URL=http://localhost:8080 npx playwright test tests/
 |----------|--------|
 | Port 8080 in use by unknown process | Try 8081, 8082... up to 8099 |
 | No available ports | Return error with "next_action": "fix" |
-| Tests fail | Return "status": "failure" with error details |
+| Pass rate < 66% | Return "status": "failure", exit 1 |
+| Pass rate ≥ 66% but < 100% | Return "status": "partial", exit 0, "next_action": "review" |
+| All tests pass | Return "status": "success", exit 0 |
 | Server startup fails | Return "status": "failure" with server error |
 
 ## Usage Examples

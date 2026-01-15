@@ -104,6 +104,78 @@ When creating bug tickets, you MUST use ONE of these categories:
 
 **CRITICAL:** Create ONE ticket for EACH distinct issue. Do NOT consolidate multiple issues into one ticket.
 
+### P4.1: Test Assertion Requirements
+
+When generating or validating Playwright tests, enforce strict assertion quality rules.
+
+#### FORBIDDEN Patterns (Auto-Reject)
+
+Tests using these patterns will be **automatically rejected** as they pass for any page:
+
+| Pattern | Why It's Bad | What Happens |
+|---------|--------------|--------------|
+| `expect(pageContent.length).toBeGreaterThan(0)` | Passes for any page with any content | Empty component detection bypassed |
+| `expect(element).toBeTruthy()` without visibility | Element in DOM but not visible | Hidden failures pass |
+| `if (element) { expect(...) }` | Silently skips when element missing | Missing elements not detected |
+| `expect(await page.content()).toContain('any')` | Too broad, matches anything | No specific validation |
+| `try { ... } catch { /* ignore */ }` | Swallows test failures | Errors hidden |
+| `element?.textContent ?? ''` | Empty string passes as valid | Missing content not caught |
+
+**Auto-Reject Detection:**
+```javascript
+// These patterns in test code trigger automatic rejection
+const FORBIDDEN_PATTERNS = [
+  /expect\(.*\.length\)\.toBeGreaterThan\(0\)/,      // Length > 0 passes for anything
+  /if\s*\([^)]+\)\s*\{\s*expect/,                    // Conditional expects
+  /catch\s*\([^)]*\)\s*\{\s*\/\*.*\*\/\s*\}/,        // Empty catch blocks
+  /\?\.\s*textContent\s*\?\?\s*['"]{2}/,             // Optional chaining with empty fallback
+  /expect\(.*\)\.toBeTruthy\(\)/,                     // toBeTruthy without toBeVisible
+];
+```
+
+#### REQUIRED Patterns (Must Use)
+
+All tests MUST use specific, deterministic assertions:
+
+| Pattern | What It Validates | Example |
+|---------|-------------------|---------|
+| `toHaveCount(n)` | Exact element count | `expect(page.locator('[data-metric-card]')).toHaveCount(4)` |
+| `toBeVisible()` | Element is visible | `await expect(slider).toBeVisible()` |
+| `toHaveText(exact)` | Specific text content | `expect(heading).toHaveText('Water Treatment')` |
+| `toHaveAttribute(attr, value)` | Attribute value | `expect(link).toHaveAttribute('href', '/about')` |
+| `toHaveCSS(prop, value)` | CSS property | `expect(nav).toHaveCSS('position', 'fixed')` |
+| `toContainText(specific)` | Contains specific text | `expect(card).toContainText('Olympic pools')` |
+
+**Required Patterns:**
+```javascript
+// GOOD: Specific count assertion
+await expect(page.locator('[data-metric-card]')).toHaveCount(4);
+
+// GOOD: Visibility without conditional
+await expect(page.locator('.hero-section')).toBeVisible();
+
+// GOOD: Specific CSS value
+await expect(page.locator('nav')).toHaveCSS('position', 'fixed');
+
+// GOOD: Specific text content
+await expect(page.locator('[data-stat-value]')).toHaveText('2.5M');
+```
+
+#### Test Quality Validation
+
+Before accepting any generated test, verify:
+
+1. **No conditional expects** - Every expect() runs unconditionally
+2. **Specific counts** - toHaveCount() uses exact number, not > 0
+3. **Specific values** - toHaveText/toHaveCSS use exact expected values
+4. **No empty fallbacks** - No ?? '', || '' patterns
+5. **Explicit visibility** - Use toBeVisible(), not just element existence
+
+**Quality Score:**
+- Tests with ANY forbidden pattern: **REJECT (score: 0)**
+- Tests without required patterns: **WARN (score: 0.5)**
+- Tests with all required patterns: **PASS (score: 1.0)**
+
 ### Silent Spec Violations (Web-Specific)
 
 These are code patterns that **violate web specs but don't throw errors** - they silently produce wrong behavior:

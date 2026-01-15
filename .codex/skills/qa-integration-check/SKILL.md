@@ -70,6 +70,48 @@ For each src="..." or url(...):
         NOT_EXISTS → Error: "missing_asset"
 ```
 
+### 5. DOM Preservation (RCA: Jan 13, 2026)
+
+Verify JavaScript initialization preserves static HTML content:
+
+```
+For each HTML file with data-* attributes:
+    └── Extract all [data-*] selectors
+    └── Find JS files that querySelector these selectors
+    └── Check for destructive patterns BEFORE the query:
+        - container.innerHTML = (destroys content)
+        - this.element.innerHTML = (destroys content)
+        FOUND → Error: "content_destroyed"
+        NOT_FOUND → Valid
+```
+
+### 6. Container Dimensions
+
+Verify map/chart containers have explicit height:
+
+```
+For each [data-map-container], [data-chart-container], .mapbox-container:
+    └── Check CSS for explicit height (px, em, rem, vh)
+        FOUND → Valid
+        NOT_FOUND (only height: 100%) → Error: "missing_dimension"
+```
+
+### 7. DOM Snapshot Comparison (Browser Test)
+
+Compare element count before/after initialization:
+
+```
+Before init:
+    count = document.querySelectorAll('[data-*]').length
+
+After init:
+    newCount = document.querySelectorAll('[data-*]').length
+
+newCount >= count?
+    YES → Valid (preservation)
+    NO  → Error: "elements_destroyed"
+```
+
 ## Output Format
 
 ```json
@@ -98,6 +140,22 @@ For each src="..." or url(...):
       "missing": [
         {"path": "src/assets/logo.png", "referenced_in": "src/components/Header.js"}
       ]
+    },
+    "dom_preservation": {
+      "passed": true,
+      "data_attributes_found": 12,
+      "violations": []
+    },
+    "container_dimensions": {
+      "passed": true,
+      "containers_checked": 3,
+      "missing_height": []
+    },
+    "dom_snapshot": {
+      "passed": true,
+      "before_count": 24,
+      "after_count": 26,
+      "elements_destroyed": 0
     }
   },
   "summary": {
@@ -124,8 +182,11 @@ For each src="..." or url(...):
 |------------|----------|----------------|
 | broken_import | CRITICAL | YES |
 | undefined_component | CRITICAL | YES |
+| content_destroyed | CRITICAL | YES |
+| elements_destroyed | CRITICAL | YES |
 | orphan_class | HIGH | YES |
 | missing_asset | HIGH | YES |
+| missing_dimension | HIGH | YES |
 | unused_export | LOW | NO |
 | unused_class | LOW | NO |
 
