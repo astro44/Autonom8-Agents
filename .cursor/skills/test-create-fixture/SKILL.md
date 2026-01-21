@@ -1,6 +1,10 @@
 ---
 name: test-create-fixture
 description: Create HTML test fixture for UI components. Uses project templates to create isolated test pages for TDD validation.
+context_injection:
+  priority: 2
+  when:
+    - tdd_enabled == true
 ---
 
 # test-create-fixture - Component Test Fixture Creator
@@ -261,3 +265,56 @@ window.__getInitError = () => initError;
 - Template-based generation (no LLM needed for structure)
 - ~2-5 second execution
 - Returns ready-to-use HTML fixture
+
+<!-- CONTEXT_INJECTION_START -->
+## TDD IMPLEMENTATION REQUIREMENTS
+
+When implementing components in a TDD workflow, follow these rules:
+
+### Module Export Requirements
+Every component module MUST export:
+1. The component class/function as named export
+2. An initialization factory if needed
+3. All exports must be synchronously available
+
+```javascript
+// CORRECT - synchronous exports available immediately
+export class MetricCard { ... }
+export function initMetricCard(container, options) { ... }
+
+// WRONG - async-only exports break tests
+export default async function() { ... }  // Can't be accessed synchronously
+```
+
+### Window Globals for Playwright
+Set these globals SYNCHRONOUSLY (before any async operations):
+```javascript
+import { MyComponent } from '/components/MyComponent.js';
+
+// SYNC - set immediately after import
+window.__testModule = { MyComponent };
+
+// ASYNC - set after initialization completes
+async function init() {
+  const instance = new MyComponent();
+  await instance.initialize();
+  window.__testInstances = [instance];
+  window.__isInitialized = () => true;
+}
+```
+
+### Absolute Import Paths
+- ALWAYS use absolute paths from server root: `/components/...`
+- NEVER use relative paths: `../../components/...`
+- Check for `import_prefix` in context (e.g., `/src` for project-root servers)
+
+### Test ID Attributes
+- Add `data-testid` to all testable elements
+- Use kebab-case: `data-testid="metric-card-value"`
+- Include test IDs for state indicators: `data-testid="loading"`, `data-testid="error"`
+
+### Focus on Happy Path
+- Initial TDD fixtures test the happy path only
+- Defer edge cases (missing files, errors) to later phases
+- Mark deferred tests: `{ status: 'deferred', note: '...' }`
+<!-- CONTEXT_INJECTION_END -->

@@ -1,6 +1,10 @@
 ---
 name: qa-visual-qa-web
 description: Visual QA for HTML/CSS/JS web apps. Validates layout, animations, styling, i18n keys, data display, and interactive elements using Playwright.
+context_injection:
+  priority: 2
+  when:
+    - platform == "web"
 ---
 
 # qa-visual-qa-web - Web Visual QA
@@ -161,3 +165,39 @@ Check for meaningless UI:
   "fix_suggestion": "Move all @import to top of file"
 }
 ```
+
+<!-- CONTEXT_INJECTION_START -->
+## VISUAL QA REQUIREMENTS (Web Platform)
+
+When implementing web UI components, follow these rules to pass visual QA:
+
+### Data Attributes for Testing
+- Add `data-testid="component-name"` to all major components
+- Add `data-testid` to interactive elements (buttons, links, inputs)
+- Use semantic naming: `data-testid="hero-section"`, `data-testid="nav-menu"`
+
+### CSS Best Practices
+- Place ALL `@import` statements at TOP of CSS files (after `@import` rules are silently ignored)
+- Use CSS custom properties with fallbacks: `var(--color-primary, #007bff)`
+- Avoid `textContent =` on elements with children (destroys child nodes)
+
+### Layout Requirements
+- Fixed navigation: `position: fixed; top: 0; width: 100%;`
+- Full-height sections: Use `min-height: 100vh` not `height: 100vh`
+- Responsive images: Include `max-width: 100%; height: auto;`
+
+### Animation Checklist
+- Define `@keyframes` in CSS before using `animation` property
+- Ensure animation CSS file is imported in correct order
+- Test animations work in Playwright headless mode
+
+### i18n/Localization
+- Never display raw translation keys (e.g., `impact.section_subtitle`)
+- Initialize i18n before DOM content renders
+- Provide fallback strings for missing translations
+
+### Avoid Scaffolding Issues
+- Never commit empty `[data-*]` containers
+- Real content must be present (not just loading spinners)
+- Images must have actual content (not placeholder bytes)
+<!-- CONTEXT_INJECTION_END -->
