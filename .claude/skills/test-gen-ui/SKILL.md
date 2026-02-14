@@ -198,6 +198,94 @@ export const mockMetrics = {
 | Visual | Screenshot comparison | `toHaveScreenshot()` |
 | Accessibility | ARIA, focus, keyboard | `toHaveAttribute('aria-*')` |
 
+## CRITICAL: Testing Async Animation Functions (All Platforms)
+
+**Animation systems are ASYNC across all platforms.** The first interpolated value is NOT the "from" parameter due to frame timing.
+
+| Platform | Animation System | Frame Timing |
+|----------|-----------------|--------------|
+| Web | `requestAnimationFrame` | ~16ms (60fps) |
+| Flutter | `AnimationController` / `Ticker` | ~16ms (60fps) |
+| iOS | `CADisplayLink` / `UIView.animate` | ~16ms (60fps) |
+| Android | `ValueAnimator` / `ObjectAnimator` | ~16ms (60fps) |
+| Desktop | Platform vsync | Variable |
+
+### Wrong Pattern (causes test thrashing)
+
+```
+// PSEUDOCODE - applies to ALL platforms:
+
+// FIXTURE (WRONG):
+values = []
+animate(from=0, to=100, duration=100ms, callback=(v) => values.add(v))
+testData = {
+  startValue: values[0],  // ❌ First interpolated value, NOT 0
+  endValue: values.last
+}
+
+// SPEC (expects 0, but gets first interpolated value > 0):
+expect(testData.startValue).toBe(0)  // ❌ FAILS - first frame fires after time elapsed
+```
+
+### Correct Pattern
+
+**Option 1: Capture "from" parameter explicitly**
+```
+// FIXTURE (CORRECT):
+fromValue = 0
+toValue = 100
+values = []
+animate(fromValue, toValue, 100ms, callback=(v) => values.add(v))
+testData = {
+  startValue: fromValue,       // ✅ The intended animation start
+  endValue: values.last,
+  firstInterpolated: values[0] // For debugging
+}
+```
+
+**Option 2: Use range-based assertions**
+```
+// SPEC (CORRECT - accounts for async timing):
+expect(testData.startValue).toBeInRange(0, 15)  // First frame close to 0
+expect(testData.endValue).toBe(100)             // Final value exact
+expect(testData.frameCount).toBeGreaterThan(1)  // Multiple frames rendered
+```
+
+### Platform-Specific Examples
+
+**Web (JavaScript):**
+```javascript
+expect(test.startValue).toBeGreaterThanOrEqual(0);
+expect(test.startValue).toBeLessThan(20);
+```
+
+**Flutter (Dart):**
+```dart
+expect(testData.startValue, inInclusiveRange(0, 15));
+expect(testData.endValue, equals(100));
+```
+
+**iOS (Swift):**
+```swift
+XCTAssertGreaterThanOrEqual(testData.startValue, 0)
+XCTAssertLessThan(testData.startValue, 20)
+```
+
+**Android (Kotlin):**
+```kotlin
+assertThat(testData.startValue).isIn(Range.closed(0f, 15f))
+assertThat(testData.endValue).isEqualTo(100f)
+```
+
+### Why This Matters
+
+Frame-based animation timing varies by platform, device, and system load:
+- First callback happens after 1 frame (~16ms at 60fps)
+- First interpolated value = easeFunc(elapsed/duration) × range
+- For 100ms animation: first value ≈ 0-15, NOT exactly 0
+
+**Always test animation "from/to" parameters separately from interpolated callback values.**
+
 ## Usage Examples
 
 **Generate tests for ticket components:**

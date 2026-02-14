@@ -64,11 +64,12 @@ description: Brief description (max 500 chars)
 ...
 ```
 
-## Available Skills (24)
+## Available Skills (26)
 
 | Category | Skills |
 |----------|--------|
-| **QA** | qa-visual-qa-web, qa-smoke-test, qa-performance, qa-visual-flutter, qa-visual-ios, qa-backend, qa-data, qa-exploratory, qa-integration-check, qa-run-tests, qa-browser-check |
+| **QA** | qa-visual-qa-web, qa-visual-interaction, qa-smoke-test, qa-performance, qa-visual-flutter, qa-visual-ios, qa-backend, qa-data, qa-exploratory, qa-integration-check, qa-run-tests, qa-browser-check |
+| **Proactive** | third-party-theming-audit (design phase - detects third-party styling conflicts before implementation) |
 | **Review** | review-code-review, review-validate-ticket |
 | **Validation** | validate-ticket, lint, check-imports, deploy-check |
 | **Generation** | generate-catalog, catalog-update, test-gen-ui |

@@ -20,6 +20,10 @@ permissions:
   - { read: "CATALOG.md" }
   - { write: "reports/visual-qa" }
   - { write: "tickets/assigned" }
+  - { bash: "run playwright visual interaction tests" }
+  - { bash: "node capture_interaction.mjs" }
+skills:
+  - qa-visual-interaction
 risk_level: low
 version: 2.0.0
 created: 2025-10-31
@@ -101,8 +105,48 @@ When creating bug tickets, you MUST use ONE of these categories:
 | `card_structure_inconsistent` | Cards in a set have different structural elements | Some cards have icons in header, others don't |
 | `state_css_missing` | JS adds state class but CSS has no rule for it | JS adds `--loaded` class but CSS doesn't hide loading state |
 | `css_selector_mismatch` | CSS selector targets nonexistent DOM structure | CSS targets `.parent .child` but JS renders text directly in parent |
+| `third_party_styling` | Third-party component (Mapbox, charts, etc.) has styling conflicts | Map popup shows white text on white background due to theme token conflict |
 
 **CRITICAL:** Create ONE ticket for EACH distinct issue. Do NOT consolidate multiple issues into one ticket.
+
+### Interactive Element Verification (qa-visual-interaction skill)
+
+**When static tests can't detect visual issues**, use the `qa-visual-interaction` skill to:
+- Click on map markers and verify popup styling
+- Open modals/dialogs and check content rendering
+- Trigger tooltips and verify positioning/styling
+- Interact with dropdowns/accordions and check expanded state
+
+**Trigger Conditions - Use skill when:**
+- Component uses third-party library (Mapbox, Leaflet, Google Maps, Chart.js, etc.)
+- Element requires click/hover to reveal content (popups, modals, tooltips)
+- CSS uses design tokens that may conflict with third-party defaults
+- Static screenshot shows element but can't verify interactive state
+
+**Usage:**
+```bash
+# Verify map popup styling
+node capture_interaction.mjs "http://localhost:8080/pages/index.html" ".mapboxgl-marker" "/tmp/map_popup.png"
+
+# Verify modal content
+node capture_interaction.mjs "http://localhost:8080/pages/index.html" "[data-modal-trigger]" "/tmp/modal.png"
+```
+
+**Third-Party Styling Issue Detection:**
+
+| Third-Party | Common Selectors | Default Conflicts |
+|-------------|------------------|-------------------|
+| Mapbox GL | `.mapboxgl-popup-content` | White background overrides dark theme |
+| Leaflet | `.leaflet-popup-content` | Default fonts override design system |
+| Google Maps | `.gm-style-iw` | Info window ignores CSS variables |
+| Chart.js | `.chartjs-tooltip` | Tooltip uses inline styles |
+| Select2 | `.select2-dropdown` | Dropdown ignores parent theme |
+
+**Cross-Platform Note:** Third-party styling overrides apply differently per platform:
+- **Web/CSS:** Use `!important` or higher specificity selectors
+- **Flutter:** Use `Theme.of(context).copyWith()` or wrap in Theme widget
+- **iOS:** Use UIAppearance proxies or subclass with custom styling
+- **Android:** Use style inheritance in themes.xml or programmatic theming
 
 ### P4.1: Test Assertion Requirements
 
@@ -402,6 +446,8 @@ grep -r "parseFloat\|parseInt\|Number(" src/js/
 | CSS `@import` after CSS rules in file | `silent_spec_violation` | Move `@import` to top of CSS file |
 | JS `textContent =` on element with child nodes | `structure_mutation` | Target specific child element instead |
 | Component styles not applied, no console error | `silent_spec_violation` | Check CSS `@import` order, verify file loads |
+| Third-party popup/tooltip wrong colors | `third_party_styling` | Add `!important` overrides or increase CSS specificity |
+| Map marker popup invisible text | `third_party_styling` | Override `.mapboxgl-popup-content` with theme tokens + `!important` |
 
 ### Bug Ticket Format
 

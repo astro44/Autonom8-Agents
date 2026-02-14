@@ -1,11 +1,13 @@
 ---
 name: test-create-fixture
-description: Create HTML test fixture for UI components. Uses project templates to create isolated test pages for TDD validation.
+description: Create HTML test fixture AND Playwright spec for UI components. Uses project templates to create isolated test pages for TDD validation. Web-specific enhancement creates both files.
 ---
 
-# test-create-fixture - Component Test Fixture Creator
+# test-create-fixture - Component Test Fixture & Spec Creator
 
-Creates HTML test fixture files for UI components. Used by dev agents during TDD to create isolated test pages before implementation.
+Creates HTML test fixture files AND Playwright spec files for UI components. Used by dev agents during TDD to create isolated test pages before implementation.
+
+**Web Platform Enhancement:** For web projects, this skill creates BOTH the fixture HTML AND the Playwright spec file to avoid silent failures from missing specs.
 
 ## Input Schema
 
@@ -15,14 +17,19 @@ Creates HTML test fixture files for UI components. Used by dev agents during TDD
   "ticket_id": "TICKET-XXX_A.1",
   "component_path": "src/components/impact/MetricCard.js",
   "fixture_path": "src/tests/metric-card.html",
+  "spec_path": "tests/metric-card.spec.js",
   "component_name": "MetricCard",
   "component_class": "MetricCard",
+  "platform": "web",
   "acceptance_criteria": [
     {"id": "AC-001", "description": "Counter animates from 0 to target"},
     {"id": "AC-002", "description": "Displays unit label correctly"}
   ]
 }
 ```
+
+**Note:** `spec_path` is REQUIRED for web platform. If not provided, derive from fixture_path:
+- `src/tests/metric-card.html` → `tests/metric-card.spec.js`
 
 ## CRITICAL: Use Absolute URL Paths (NOT Relative)
 
@@ -48,31 +55,49 @@ RIGHT: /components/impact/MetricCard.js
 
 ## Instructions
 
-### 1. Locate Template
+### 1. Locate Templates
 
 ```bash
-# Template location (in order of priority):
+# Fixture template location (in order of priority):
 # 1. Project-specific: {project_dir}/templates/tests/component-fixture.html
 # 2. Harness: {project_dir}/harness/templates/component-fixture.html
 # 3. Global: templates/project/tests/web/component-fixture.template.html
+
+# Spec template location (web platform only):
+# 1. Project-specific: {project_dir}/templates/tests/component.spec.template.js
+# 2. Global: templates/project/tests/web/component.spec.template.js
 ```
 
 ### 2. Process Template Variables
 
-Replace mustache-style variables in template:
+Replace mustache-style variables in templates:
+
+### Shared Variables (Fixture + Spec)
 
 | Variable | Source | Example |
 |----------|--------|---------|
 | `{{TICKET_ID}}` | input.ticket_id | TICKET-OXY-003_A.1 |
 | `{{COMPONENT_NAME}}` | input.component_name | MetricCard |
-| `{{COMPONENT_PATH}}` | Absolute URL from server root | /components/impact/MetricCard.js |
 | `{{COMPONENT_CLASS}}` | input.component_class | MetricCard |
-| `{{COMPONENT_CSS}}` | CSS absolute URL | /styles/metric-card.css |
-| `{{COMPONENT_OPTIONS}}` | Default init options | `{}` or from ticket |
-| `{{COMPONENT_SELECTOR}}` | data-* attribute name (kebab-case) | circular-progress |
 | `{{#ACCEPTANCE_CRITERIA}}` | Loop over ACs | Creates test sections |
 | `{{AC_ID}}` | Each AC ID | AC-001 |
 | `{{AC_DESCRIPTION}}` | Each AC description | Counter animates... |
+
+### Fixture-Specific Variables
+
+| Variable | Source | Example |
+|----------|--------|---------|
+| `{{COMPONENT_PATH}}` | Absolute URL from server root | /components/impact/MetricCard.js |
+| `{{COMPONENT_CSS}}` | CSS absolute URL | /styles/metric-card.css |
+| `{{COMPONENT_OPTIONS}}` | Default init options | `{}` or from ticket |
+| `{{COMPONENT_SELECTOR}}` | data-* attribute name (kebab-case) | circular-progress |
+
+### Spec-Specific Variables (Web Platform)
+
+| Variable | Source | Example |
+|----------|--------|---------|
+| `{{SPEC_FILENAME}}` | Basename of spec_path | metric-card.spec.js |
+| `{{FIXTURE_FILENAME}}` | Basename of fixture_path | metric-card.html |
 
 ### 3. Calculate Absolute URL Paths
 
@@ -134,6 +159,48 @@ await fs.mkdir(fixtureDir, { recursive: true });
 await fs.writeFile(fixturePath, processedTemplate);
 ```
 
+### 6. Write Spec File (Web Platform Only)
+
+**CRITICAL: For web platform, ALWAYS create the spec file alongside the fixture.**
+
+This step prevents silent failures where the fixture is created but the spec is missing, causing TDD verification to fail.
+
+```javascript
+// Derive spec path if not provided
+function deriveSpecPath(fixturePath) {
+  // src/tests/metric-card.html → tests/metric-card.spec.js
+  const basename = path.basename(fixturePath, '.html');
+  return `tests/${basename}.spec.js`;
+}
+
+// Ensure spec directory exists
+const specPath = input.spec_path || deriveSpecPath(input.fixture_path);
+const specDir = path.dirname(specPath);
+await fs.mkdir(specDir, { recursive: true });
+
+// Process spec template with variables
+const specTemplate = await loadTemplate('component.spec.template.js');
+const processedSpec = specTemplate
+  .replace(/\{\{TICKET_ID\}\}/g, input.ticket_id)
+  .replace(/\{\{COMPONENT_NAME\}\}/g, input.component_name)
+  .replace(/\{\{COMPONENT_CLASS\}\}/g, input.component_class)
+  .replace(/\{\{SPEC_FILENAME\}\}/g, path.basename(specPath))
+  .replace(/\{\{FIXTURE_FILENAME\}\}/g, path.basename(input.fixture_path));
+
+// Process acceptance criteria loop
+const acTests = input.acceptance_criteria.map(ac =>
+  `  test('${ac.id}: ${ac.description}', async ({ page }) => {
+    const status = page.locator('#test-status');
+    await expect(status).toHaveClass(/success/);
+    // TODO: Add specific assertions for ${ac.id}
+  });`
+).join('\n\n');
+processedSpec = processedSpec.replace(/\{\{#ACCEPTANCE_CRITERIA\}\}[\s\S]*?\{\{\/ACCEPTANCE_CRITERIA\}\}/g, acTests);
+
+// Write spec file
+await fs.writeFile(path.join(input.project_dir, specPath), processedSpec);
+```
+
 ## Output Format
 
 ```json
@@ -141,7 +208,10 @@ await fs.writeFile(fixturePath, processedTemplate);
   "skill": "test-create-fixture",
   "status": "success|failure",
   "fixture_created": "src/tests/metric-card.html",
-  "template_used": "templates/project/tests/web/component-fixture.template.html",
+  "spec_created": "tests/metric-card.spec.js",
+  "fixture_template_used": "templates/project/tests/web/component-fixture.template.html",
+  "spec_template_used": "templates/project/tests/web/component.spec.template.js",
+  "platform": "web",
   "variables_replaced": {
     "TICKET_ID": "TICKET-OXY-003_A.1",
     "COMPONENT_NAME": "MetricCard",
@@ -153,6 +223,8 @@ await fs.writeFile(fixturePath, processedTemplate);
   "next_action": "validate_fixture"
 }
 ```
+
+**IMPORTANT:** For web platform, both `fixture_created` AND `spec_created` must be present for success. If either file fails to create, return `status: "failure"` with appropriate error message.
 
 ## Happy Path Only (CRITICAL)
 
@@ -220,6 +292,64 @@ window.__getInitError = () => initError;
 - If not set synchronously, tests fail with race conditions
 - Chromium especially affected (19 failures vs WebKit's 4)
 
+### Null-Return Handling (CRITICAL - Prevents False Positives)
+
+**Problem:** Many components return `null` on failure instead of throwing exceptions. Fixtures that only use try/catch will show "success" even when initialization failed.
+
+**Solution:** Always check for null returns in the initialization IIFE:
+
+```javascript
+(async () => {
+    try {
+        const instance = await createComponent(container);
+
+        // CRITICAL: Check for null return (component failed internally)
+        if (!instance) {
+            initError = new Error('Component returned null - initialization failed');
+            statusEl.textContent = 'Error: Component failed to initialize';
+            statusEl.className = 'error';
+            window.__isInitialized = () => false;
+            window.__getInitError = () => initError;
+            return;
+        }
+
+        // Success path
+        instances.push(instance);
+        window.__testInstances = instances;
+        statusEl.textContent = 'Component initialized successfully';
+        statusEl.className = 'success';
+        window.__isInitialized = () => true;
+    } catch (error) {
+        initError = error;
+        console.error('Component initialization error:', error);
+        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.className = 'error';
+        window.__isInitialized = () => false;
+        window.__getInitError = () => initError;
+    }
+})();
+```
+
+**Why This Matters for Fallback Tests:**
+When testing graceful degradation (e.g., "shows fallback when Mapbox fails"):
+
+```javascript
+// In spec file:
+test('AC-6: Shows fallback when dependency fails', async ({ page }) => {
+    // Block the dependency
+    await page.route('**/mapbox-gl.js', route => route.abort());
+    await page.reload({ waitUntil: 'networkidle' });
+
+    // Wait for error state (fixture sets .error class on null return)
+    await page.waitForSelector('#test-status.error', { timeout: 5000 });
+
+    // Verify fallback UI rendered
+    await expect(page.locator('.component-fallback')).toBeVisible();
+});
+```
+
+Without null-return handling, this test fails because the fixture shows "success" with 0 instances instead of "error".
+
 ## Example Generated Fixture
 
 ```html
@@ -260,4 +390,30 @@ window.__getInitError = () => initError;
 
 - Template-based generation (no LLM needed for structure)
 - ~2-5 second execution
-- Returns ready-to-use HTML fixture
+- Returns ready-to-use HTML fixture AND Playwright spec (web platform)
+- Self-sufficient for basic TDD scaffolding - no agent fallback needed for standard cases
+
+## Platform Detection
+
+```javascript
+// Determine platform from input or project config
+function getPlatform(input) {
+  if (input.platform) return input.platform;
+
+  // Check fixture path pattern
+  if (input.fixture_path.endsWith('.html')) return 'web';
+  if (input.fixture_path.includes('widget_test')) return 'flutter';
+  if (input.fixture_path.includes('XCTest')) return 'ios';
+
+  // Default to web for unknown
+  return 'web';
+}
+
+// Only create spec for web platform
+const platform = getPlatform(input);
+if (platform === 'web') {
+  // Create both fixture AND spec
+} else {
+  // Other platforms: fixture only (platform-specific test frameworks)
+}
+```

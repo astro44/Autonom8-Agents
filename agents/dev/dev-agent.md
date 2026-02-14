@@ -1785,114 +1785,51 @@ You are reviewing a pull request implemented by {implementer}.
 {pr_content}
 ---
 
-Conduct thorough code review:
+Conduct a thorough code review evaluating:
+- Code quality, test coverage, documentation
+- Security vulnerabilities and performance concerns
+- Design token compliance (hardcoded colors/values vs CSS variables)
+- Component completeness (empty containers, placeholder-only content)
+- Import chain validity and data attribute consistency
+- Technology compliance (required tech stack adherence)
 
-## Code Review
+**Severity classification:**
+- CRITICAL: Security vulnerability, data loss, crashes
+- HIGH: Broken functionality, missing AC requirement, hardcoded values replacing design tokens
+- MEDIUM: Code quality issue, missing edge case handling
+- LOW: Style suggestion, minor improvement
 
-### Code Quality: {0-10}/10
-{Justification}
+**Decision rules:**
+- `approved`: All ACs met, no HIGH/CRITICAL issues
+- `needs_work`: Any HIGH/CRITICAL issues, or ACs not satisfied
+- `rejected`: Fundamentally wrong approach requiring complete rewrite
 
-### Test Coverage: {0-10}/10
-{Are tests comprehensive?}
+**IMPORTANT:** Respond with ONLY valid JSON. No markdown, no prose, no explanation outside the JSON.
 
-### Documentation: {0-10}/10
-{Is code well-documented?}
+Return this exact JSON structure:
+```json
+{
+  "ticket_id": "{ticket_id}",
+  "decision": "approved|needs_work|rejected",
+  "quality_score": 8.5,
+  "validation_override": false,
+  "issues": ["SEVERITY: description of issue"],
+  "suggestions": ["improvement suggestions"],
+  "acceptance_met": ["AC IDs that are satisfied"],
+  "acceptance_gaps": ["AC IDs not satisfied - EXCLUDE deferred ACs"],
+  "design_token_violations": ["hardcoded colors/values found"],
+  "duplicate_rendering_issues": ["duplicate rendering patterns found"],
+  "technology_violations": ["required technology substitutions - HARD FAIL"],
+  "placeholder_issues": ["HTML comment placeholders that should be actual content"],
+  "data_attribute_issues": ["data attribute name mismatches"],
+  "component_completeness_issues": ["empty containers, placeholder-only content, missing children"],
+  "catalog_errors_fixed": ["catalog errors addressed from previous attempt"],
+  "validation_override_reason": "only if validation_override is true",
+  "review_summary": "overall assessment"
+}
+```
 
-### Issues Found
-- {Issue 1} - Severity: {Critical | High | Medium | Low}
-- {Issue 2} - Severity: {Critical | High | Medium | Low}
-
-### Security Concerns
-{Any security vulnerabilities?}
-
-### Performance Concerns
-{Any performance issues?}
-
-### Suggestions
-- {Improvement 1}
-- {Improvement 2}
-
-### Must-Fix Before Merge
-1. {Blocking issue 1}
-2. {Blocking issue 2}
-
-### Nice-to-Have (Follow-up)
-- {Enhancement 1}
-- {Enhancement 2}
-
-## Decision
-
-**Vote:** APPROVE | APPROVE_WITH_COMMENTS | REQUEST_CHANGES | DENY
-
-**Reasoning:** {Why this decision}
-
-**If APPROVE_WITH_COMMENTS:**
-Comments: {What should be improved in follow-up}
-
-**If REQUEST_CHANGES:**
-Required changes: {What must be fixed}
-
-**If DENY:**
-Reason: {Why this approach is wrong}
-
-Be thorough but pragmatic.
-
----
-
-{pr_content}
----
-
-Conduct thorough code review:
-
-## Code Review
-
-### Code Quality: {0-10}/10
-{Justification}
-
-### Test Coverage: {0-10}/10
-{Are tests comprehensive?}
-
-### Documentation: {0-10}/10
-{Is code well-documented?}
-
-### Issues Found
-- {Issue 1} - Severity: {Critical | High | Medium | Low}
-- {Issue 2} - Severity: {Critical | High | Medium | Low}
-
-### Security Concerns
-{Any security vulnerabilities?}
-
-### Performance Concerns
-{Any performance issues?}
-
-### Suggestions
-- {Improvement 1}
-- {Improvement 2}
-
-### Must-Fix Before Merge
-1. {Blocking issue 1}
-2. {Blocking issue 2}
-
-### Nice-to-Have (Follow-up)
-- {Enhancement 1}
-- {Enhancement 2}
-
-## Decision
-
-**Vote:** APPROVE | APPROVE_WITH_COMMENTS | REQUEST_CHANGES | DENY
-
-**Reasoning:** {Why this decision}
-
-**If APPROVE_WITH_COMMENTS:**
-Comments: {What should be improved in follow-up}
-
-**If REQUEST_CHANGES:**
-Required changes: {What must be fixed}
-
-**If DENY:**
-Reason: {Why this approach is wrong}
-
-Be thorough but pragmatic.
+Be thorough but pragmatic. HIGH severity issues MUST result in needs_work, not approved.
 
 ---
 
