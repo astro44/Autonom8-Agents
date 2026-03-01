@@ -38,6 +38,8 @@ All agents listed here are available to all providers unless overridden.
 | data-qa-agent | `agents/qa/data-qa-agent.md` | Data QA for migrations, DynamoDB - schema/rollback validation | ✅ Active |
 | performance-qa-agent | `agents/qa/performance-qa-agent.md` | Performance QA - Core Web Vitals, bundle size budgets, resource counting | ✅ Active |
 | ui-test-gen-agent | `agents/qa/ui-test-gen-agent.md` | UI test scaffolding - generates Playwright specs and fixtures for UI components | ✅ Active |
+| design-review-agent | `agents/qa/design-review-agent.md` | Design review base agent - composition, hierarchy, typography, whitespace, storytelling scoring | ✅ Active |
+| design-review-web-agent | `agents/qa/design-review-web-agent.md` | Design review for HTML/CSS/JS - Playwright layout measurement, typography audit | ✅ Active |
 | devops-agent | `agents/devops/devops-agent.md` | Infrastructure, deployment, monitoring, incident response, RCA | ✅ Active |
 | decomposition-challenger-agent | `agents/core/decomposition-challenger-agent.md` | Challenges non-decomposed tickets, identifies cross-ticket dependencies | ✅ Active |
 | catalog-agent | `agents/core/catalog-agent.md` | Generates src/CATALOG.md from deployed ticket files_created metadata | ✅ Active |

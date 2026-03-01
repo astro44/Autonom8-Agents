@@ -148,6 +148,74 @@ node capture_interaction.mjs "http://localhost:8080/pages/index.html" "[data-mod
 - **iOS:** Use UIAppearance proxies or subclass with custom styling
 - **Android:** Use style inheritance in themes.xml or programmatic theming
 
+### RC-53: Scroll-First Capture Methodology
+
+**CRITICAL:** Many modern web pages use IntersectionObserver or scroll-triggered animations. Components activate when scrolled into viewport — `fullPage: true` captures the DOM without triggering scroll events, causing ALL scroll-gated components to appear at their initial state (0%, empty, loading).
+
+**Before capturing any screenshot or running visual assertions, ALWAYS scroll through the page first:**
+
+```javascript
+// REQUIRED: Scroll-activation sequence before any visual assertions
+async function activateScrollComponents(page) {
+  // Get all sections/components on page
+  const sections = await page.locator('[data-component], section, [class*="section"]').all();
+
+  for (const section of sections) {
+    // Scroll section into view
+    await section.scrollIntoViewIfNeeded();
+    // Wait for IntersectionObserver callbacks to fire
+    await page.waitForTimeout(1500);
+  }
+
+  // Scroll back to top for full-page capture
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(500);
+}
+```
+
+**Test Pattern — scroll-then-assert:**
+```javascript
+test('dashboard components render data after scroll activation', async ({ page }) => {
+  await page.goto(url);
+  await page.waitForLoadState('networkidle');
+
+  // STEP 1: Activate scroll-triggered components
+  await activateScrollComponents(page);
+
+  // STEP 2: Now assert on activated component values
+  await expect(page.locator('[data-progress-value]')).not.toHaveText('0%');
+  await expect(page.locator('[data-counter]')).not.toHaveText('0');
+});
+```
+
+**Per-section screenshot capture (preferred over fullPage):**
+```javascript
+// Capture each section at its scroll position for accurate state
+const sections = await page.locator('section').all();
+for (let i = 0; i < sections.length; i++) {
+  await sections[i].scrollIntoViewIfNeeded();
+  await page.waitForTimeout(2000); // Wait for animations
+  await sections[i].screenshot({ path: `section-${i}.png` });
+}
+```
+
+**Above-fold IntersectionObserver fix:**
+Elements already visible on load may not trigger IntersectionObserver callbacks. Check initial visibility:
+```javascript
+// After observer.observe(element), handle above-fold elements
+const rect = element.getBoundingClientRect();
+if (rect.top < window.innerHeight && rect.bottom > 0) {
+  // Already visible — fire callback immediately
+  requestAnimationFrame(() => callback(element));
+}
+```
+
+**False Negative Prevention:**
+- DO NOT use `fullPage: true` without scroll activation
+- DO NOT assert on animated values (progress %, counters) without scrolling first
+- DO NOT report "component stuck at 0%" without verifying scroll-trigger behavior
+- If component shows 0% in static capture but correct value after scroll, this is WORKING AS DESIGNED (IntersectionObserver pattern)
+
 ### P4.1: Test Assertion Requirements
 
 When generating or validating Playwright tests, enforce strict assertion quality rules.

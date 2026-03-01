@@ -236,21 +236,24 @@ Strip the `source_dir` prefix from file paths to get the URL path.
 }
 ```
 
-**When tests already exist (CRITICAL - thrash suppression fallback):**
+**When tests already exist (CRITICAL - independent audit mode):**
 ```json
 {
   "ticket_id": "TICKET-OXY-003-COMPONENT_A.1",
-  "status": "exists",
+  "status": "audited",
+  "audit_mode": "existing_tests",
+  "audit_status": "passed",
   "existing_files": [
     "tests/circular-progress.spec.js",
     "src/tests/impact-circular-progress.html"
   ],
-  "notes": "Tests already exist - no regeneration needed"
+  "audit_findings": [],
+  "notes": "Existing tests reviewed by independent auditor; AC contract and polish checks passed"
 }
 ```
 
-**IMPORTANT:** When tests already exist, you MUST return the "exists" status JSON.
-Do NOT return prose like "Tests already exist for this component." - that breaks parsing.
+**IMPORTANT:** When tests already exist, you MUST perform audit mode and return structured audit fields (`audit_mode`, `audit_status`, `audit_findings`).
+Do NOT return prose like "Tests already exist for this component." - that breaks parsing and fails policy.
 
 ---
 
@@ -280,8 +283,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
 2. **CHECK IF TESTS EXIST** - Look for existing spec/fixture files for this component
-   - If tests exist, return `{"status": "exists", ...}` JSON immediately
-   - Do NOT return prose like "Tests already exist" - this breaks parsing
+   - If tests exist, run independent audit mode and return `{"status":"audited","audit_mode":"existing_tests","audit_status":"passed|failed", ...}` JSON
+   - Do NOT return prose; unstructured responses fail the independent audit policy
 3. **READ COMPONENT FILE** - Extract actual exports and detect patterns:
    - Extract function/class exports (don't assume names)
    - Detect IntersectionObserver usage (lazy loading)
@@ -339,8 +342,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
 2. **CHECK IF TESTS EXIST** - Look for existing spec/fixture files for this component
-   - If tests exist, return `{"status": "exists", ...}` JSON immediately
-   - Do NOT return prose like "Tests already exist" - this breaks parsing
+   - If tests exist, run independent audit mode and return `{"status":"audited","audit_mode":"existing_tests","audit_status":"passed|failed", ...}` JSON
+   - Do NOT return prose; unstructured responses fail the independent audit policy
 3. **READ COMPONENT FILE** - Extract actual exports and detect patterns:
    - Extract function/class exports (don't assume names)
    - Detect IntersectionObserver usage (lazy loading)
@@ -398,8 +401,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
 2. **CHECK IF TESTS EXIST** - Look for existing spec/fixture files for this component
-   - If tests exist, return `{"status": "exists", ...}` JSON immediately
-   - Do NOT return prose like "Tests already exist" - this breaks parsing
+   - If tests exist, run independent audit mode and return `{"status":"audited","audit_mode":"existing_tests","audit_status":"passed|failed", ...}` JSON
+   - Do NOT return prose; unstructured responses fail the independent audit policy
 3. **READ COMPONENT FILE** - Extract actual exports and detect patterns:
    - Extract function/class exports (don't assume names)
    - Detect IntersectionObserver usage (lazy loading)
@@ -457,8 +460,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
 2. **CHECK IF TESTS EXIST** - Look for existing spec/fixture files for this component
-   - If tests exist, return `{"status": "exists", ...}` JSON immediately
-   - Do NOT return prose like "Tests already exist" - this breaks parsing
+   - If tests exist, run independent audit mode and return `{"status":"audited","audit_mode":"existing_tests","audit_status":"passed|failed", ...}` JSON
+   - Do NOT return prose; unstructured responses fail the independent audit policy
 3. **READ COMPONENT FILE** - Extract actual exports and detect patterns:
    - Extract function/class exports (don't assume names)
    - Detect IntersectionObserver usage (lazy loading)
@@ -516,8 +519,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
 2. **CHECK IF TESTS EXIST** - Look for existing spec/fixture files for this component
-   - If tests exist, return `{"status": "exists", ...}` JSON immediately
-   - Do NOT return prose like "Tests already exist" - this breaks parsing
+   - If tests exist, run independent audit mode and return `{"status":"audited","audit_mode":"existing_tests","audit_status":"passed|failed", ...}` JSON
+   - Do NOT return prose; unstructured responses fail the independent audit policy
 3. **READ COMPONENT FILE** - Extract actual exports and detect patterns:
    - Extract function/class exports (don't assume names)
    - Detect IntersectionObserver usage (lazy loading)

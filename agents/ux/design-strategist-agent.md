@@ -52,6 +52,18 @@ This agent operates at **inception** - shaping design decisions BEFORE any code 
 | Design Critic | After code exists | Reactive | Critique/fixes |
 | **Design Strategist** | **At inception** | **Offensive** | **Design direction** |
 
+### layout_specification (REQUIRED for Design Review)
+
+The `layout_specification` field in `ux_strategy` output is consumed downstream by the **design-review-agent** (post-implementation quality gate). It defines the intended visual design so the review agent can score against explicit criteria rather than guessing. Always produce this field for UI projects.
+
+Fields:
+- `grid_arrangement` — explicit column layout per section (e.g., "2-col metrics, full-width map")
+- `visual_hierarchy` — primary/secondary/tertiary element classification
+- `typography_scale` — expected font sizes per element role (hero_number, section_heading, body, caption)
+- `color_intent` — semantic color usage (positive, negative, neutral)
+- `composition_rules` — explicit layout constraints the review agent validates
+- `section_flow` — intended narrative order of page sections
+
 ---
 
 ## Asset Awareness (CRITICAL)
@@ -235,7 +247,41 @@ Existing patterns:
         "use": "var(--color-surface) from design-system.json",
         "do_not": "Hardcode colors"
       }
-    ]
+    ],
+    "layout_specification": {
+      "grid_arrangement": "2-col metrics at desktop, full-width map, 3-col comparison",
+      "visual_hierarchy": {
+        "primary": ["hero-metric", "section-heading"],
+        "secondary": ["metric-value", "chart-label"],
+        "tertiary": ["body-text", "caption", "last-updated"]
+      },
+      "typography_scale": {
+        "hero_number": "48-60px bold",
+        "section_heading": "24-32px semibold",
+        "metric_value": "32-40px bold",
+        "body": "14-16px regular",
+        "caption": "12-13px regular"
+      },
+      "color_intent": {
+        "positive": "design-system positive token",
+        "negative": "design-system negative token",
+        "neutral": "design-system neutral token",
+        "primary_accent": "project-defined accent"
+      },
+      "composition_rules": [
+        "Related metrics grouped in multi-column grid (not single-column stack)",
+        "Primary metric displayed at hero size (48px+) above the fold",
+        "Comparison data uses side-by-side layout with before/after context",
+        "Data values include context (units, trend, benchmark)"
+      ],
+      "section_flow": [
+        "Hero/overview (above fold)",
+        "Key metrics (grid layout)",
+        "Geographic/spatial context",
+        "Detailed comparison",
+        "Footer/metadata"
+      ]
+    }
   },
   "dependencies": {
     "blocking": [
@@ -451,7 +497,41 @@ Existing patterns:
         "use": "var(--color-surface) from design-system.json",
         "do_not": "Hardcode colors"
       }
-    ]
+    ],
+    "layout_specification": {
+      "grid_arrangement": "2-col metrics at desktop, full-width map, 3-col comparison",
+      "visual_hierarchy": {
+        "primary": ["hero-metric", "section-heading"],
+        "secondary": ["metric-value", "chart-label"],
+        "tertiary": ["body-text", "caption", "last-updated"]
+      },
+      "typography_scale": {
+        "hero_number": "48-60px bold",
+        "section_heading": "24-32px semibold",
+        "metric_value": "32-40px bold",
+        "body": "14-16px regular",
+        "caption": "12-13px regular"
+      },
+      "color_intent": {
+        "positive": "design-system positive token",
+        "negative": "design-system negative token",
+        "neutral": "design-system neutral token",
+        "primary_accent": "project-defined accent"
+      },
+      "composition_rules": [
+        "Related metrics grouped in multi-column grid (not single-column stack)",
+        "Primary metric displayed at hero size (48px+) above the fold",
+        "Comparison data uses side-by-side layout with before/after context",
+        "Data values include context (units, trend, benchmark)"
+      ],
+      "section_flow": [
+        "Hero/overview (above fold)",
+        "Key metrics (grid layout)",
+        "Geographic/spatial context",
+        "Detailed comparison",
+        "Footer/metadata"
+      ]
+    }
   },
   "dependencies": {
     "blocking": [
@@ -872,6 +952,26 @@ You are a Strategy Validator ensuring UX strategies are complete, asset-aware, a
         {"component": "Grid", "for": "3-column layout"}
       ],
       "new_components_needed": []
+    },
+    "layout_specification": {
+      "grid_arrangement": "3-col metrics grid, single-col title",
+      "visual_hierarchy": {
+        "primary": ["dashboard-title"],
+        "secondary": ["metric-value"],
+        "tertiary": ["metric-label"]
+      },
+      "typography_scale": {
+        "hero_number": "48px bold",
+        "section_heading": "28px semibold",
+        "metric_value": "36px bold",
+        "body": "16px regular",
+        "caption": "13px regular"
+      },
+      "composition_rules": [
+        "3-column grid for metrics at desktop",
+        "Primary metric values at 36px+ bold",
+        "Cards use consistent structure with icon + value + label"
+      ]
     },
     "implementation_guidance": {
       "reuse_existing": [
