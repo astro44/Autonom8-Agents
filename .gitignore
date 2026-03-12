@@ -8,11 +8,25 @@ test_runs/
 *.test.log
 
 # ====================
+# OS Files
+# ====================
+**/.DS_Store
+Thumbs.db
+
+# ====================
+# Dependencies
+# ====================
+**/node_modules/
+**/bun.lock
+**/package-lock.json
+
+# ====================
 # Cache & Temp
 # ====================
 .cache/
 *.tmp
 *.bak
+*.backup
 *~
 
 # ====================

@@ -148,6 +148,6 @@ metadata:
   maintainer: "Autonom8 Core Team"
   repository: "https://github.com/astro44/Autonom8-Agents"
   documentation: "https://docs.autonom8.dev/agents"
-  license: "Proprietary"
+  license: "MIT"
   created: "2025-10-31"
   updated: "2025-10-31"
