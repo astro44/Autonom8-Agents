@@ -84,8 +84,35 @@ version: 1.0
 
 ## Contributing
 
-See [CONTRIBUTING.md](../Autonom8-Core/docs/CONTRIBUTING.md) for guidelines on creating new agents.
+### Adding a New Agent
+
+1. Create a directory under `agents/<category>/` (e.g., `agents/qa/my-agent.md`).
+2. Add YAML frontmatter with required fields:
+
+```yaml
+---
+name: Agent Name
+id: my-agent
+provider: multi
+role: role_type
+purpose: "Short description"
+inputs: [...]
+outputs: [...]
+permissions: [...]
+risk_level: low | medium | high
+version: 1.0.0
+---
+```
+
+3. Define one or more `## Persona:` blocks with role, workflow, constraints, and output schema.
+4. Add provider-specific overrides in `.<provider>/overrides/<agent-id>.md` if needed.
+5. Update `manifest.yaml` to register the agent.
+6. Run the CI lint workflow to validate: `.github/workflows/lint-agents.yml`.
+
+### Adding a Skill
+
+Place skills in `skills/<skill-name>/SKILL.md` following the Agent Skills Standard format with input/output schemas.
 
 ## License
 
-Part of the Autonom8 ecosystem.
+MIT License. See [LICENSE](LICENSE) for details.
