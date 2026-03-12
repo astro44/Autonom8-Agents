@@ -1,6 +1,6 @@
 # Autonom8-Agents
 
-**The Cortex** - General-purpose AI agent definitions for the Autonom8 framework.
+**The Cortex** - library of multi-provider AI agent definitions with provider-specific overrides, skills, and schemas.
 
 ## Overview
 
