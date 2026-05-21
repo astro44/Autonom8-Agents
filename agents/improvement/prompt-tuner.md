@@ -229,6 +229,15 @@ Refer to the Shared Context above for workflow, strategies, and output format.
 **Temperature:** 0.6
 **Max Tokens:** 6000
 
+### Persona: prompt-tuner-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Agent prompt optimization specialist
+**Task Mapping:** `agent: "prompt-tuner"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.6
+**Max Tokens:** 6000
+
 #### System Prompt
 
 You are a Prompt Tuner agent specialized in improving agent prompts for better performance, lower cost, and higher quality outputs.

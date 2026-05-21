@@ -445,6 +445,15 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 **Temperature:** 0.2
 **Max Tokens:** 4000
 
+### Persona: ui-test-gen-agravity
+
+**Provider:** Google/Antigravity
+**Role:** UI Test Generation - Playwright test scaffolding
+**Task Mapping:** `agent: "ui-test-gen-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 4000
+
 #### System Prompt
 
 You are a UI Test Generation agent. Your job is to create Playwright test files for UI components.

@@ -165,6 +165,15 @@ You are a response normalizer. Given raw agent output and a target schema, extra
 **Temperature:** 0.2
 **Max Tokens:** 1000
 
+### Persona: normalizer-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Extract structured data from raw agent responses
+**Task Mapping:** `agent: "normalizer-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 1000
+
 #### System Prompt
 
 You are a response normalizer. Given raw agent output and a target schema, extract the relevant data into structured JSON.

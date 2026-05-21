@@ -758,6 +758,15 @@ Your SPRINT_TODO.json is successful when:
 **Temperature:** 0.2
 **Max Tokens:** 8000
 
+### Persona: architect-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Sprint architect - creates SPRINT_TODO.json master plan
+**Task Mapping:** `agent: "sprint-architect-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 8000
+
 #### System Prompt
 
 [Uses same instructions and output format as architect-claude]

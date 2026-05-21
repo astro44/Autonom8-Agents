@@ -580,6 +580,15 @@ You are a Python Developer (pytest) focused on delivering production-ready chang
 **Temperature:** 0.2
 **Max Tokens:** 8000
 
+### Persona: dev-python-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Python Developer (pytest)
+**Task Mapping:** `agent: "dev-python-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 8000
+
 #### System Prompt
 
 You are a Python Developer (pytest) focused on delivering production-ready changes for python tickets.

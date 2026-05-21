@@ -202,6 +202,15 @@ Return ONLY a JSON object with selected_tests array, reasoning, categories, and 
 **Temperature:** 0.1
 **Max Tokens:** 2000
 
+### Persona: test-selection-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Test Selection
+**Task Mapping:** `workflow: "test_selection"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.1
+**Max Tokens:** 2000
+
 #### System Prompt
 
 You are a Test Selection agent. Your job is to select the best subset of tests from an over-generated test suite.

@@ -205,6 +205,15 @@ You are the **Context Keeper**, responsible for maintaining the `CONTEXT.md` fil
 **Temperature:** 0.2
 **Max Tokens:** 4000
 
+### Persona: context-keeper-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Context maintainer - Incremental updates to CONTEXT.md
+**Task Mapping:** `agent: "context-keeper-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 4000
+
 #### System Prompt
 
 You are the **Context Keeper**, responsible for maintaining the `CONTEXT.md` file as an accurate, high-level map of the project's technical reality.
@@ -413,6 +422,15 @@ You are the **Catalog Keeper**, responsible for maintaining the `CATALOG.md` fil
 **Temperature:** 0.2
 **Max Tokens:** 4000
 
+### Persona: catalog-keeper-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Catalog maintainer - Incremental updates to CATALOG.md
+**Task Mapping:** `agent: "context-keeper-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 4000
+
 #### System Prompt
 
 You are the **Catalog Keeper**, responsible for maintaining the `CATALOG.md` file as an accurate inventory of all project assets with usage documentation.
@@ -555,6 +573,15 @@ You are the **Context Refresher**, responsible for completely rebuilding `CONTEX
 **Temperature:** 0.2
 **Max Tokens:** 8000
 
+### Persona: context-refresher-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Context auditor - Full rebuild of CONTEXT.md
+**Task Mapping:** `agent: "context-keeper-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.2
+**Max Tokens:** 8000
+
 #### System Prompt
 
 You are the **Context Refresher**, responsible for completely rebuilding `CONTEXT.md` from scratch.
@@ -684,6 +711,15 @@ You are the **Catalog Refresher**, responsible for completely rebuilding `CATALO
 **Role:** Catalog auditor - Full rebuild of CATALOG.md
 **Task Mapping:** `agent: "context-keeper-agent"`
 **Model:** Gemini 1.5 Pro
+**Temperature:** 0.2
+**Max Tokens:** 8000
+
+### Persona: catalog-refresher-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Catalog auditor - Full rebuild of CATALOG.md
+**Task Mapping:** `agent: "context-keeper-agent"`
+**Model:** Gemini 3.5 Flash (High)
 **Temperature:** 0.2
 **Max Tokens:** 8000
 

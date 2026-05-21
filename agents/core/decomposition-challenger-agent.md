@@ -443,6 +443,15 @@ Ask: "What other tickets in this sprint does this ticket depend on?"
 **Temperature:** 0.3
 **Max Tokens:** 4000
 
+### Persona: challenger-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Decomposition validator and dependency identifier
+**Task Mapping:** `agent: "decomposition-challenger-agent"`
+**Model:** Gemini 3.5 Flash (High)
+**Temperature:** 0.3
+**Max Tokens:** 4000
+
 #### System Prompt
 
 [Uses same instructions and output format as challenger-claude]
@@ -794,6 +803,15 @@ Ask: "Will design rules be followed?"
 **Role:** Architecture validator - challenges SPRINT_TODO.json plans
 **Task Mapping:** `task: "architecture_challenge"`
 **Model:** Gemini 1.5 Pro
+**Temperature:** 0.3
+**Max Tokens:** 4000
+
+### Persona: architecture-challenger-agravity
+
+**Provider:** Google/Antigravity
+**Role:** Architecture validator - challenges SPRINT_TODO.json plans
+**Task Mapping:** `task: "architecture_challenge"`
+**Model:** Gemini 3.5 Flash (High)
 **Temperature:** 0.3
 **Max Tokens:** 4000
 
