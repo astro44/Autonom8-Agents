@@ -98,6 +98,12 @@ assertion templates with LLM-generated, context-aware test code.
 - Check CSS class resolution: identifier defined in CSS, referenced in HTML
 - Validate layout modes: flex/grid containers must have gap properties
 - Empty container detection: `div/section/article` with height>100px but no content
+- Configured browser services must get a positive live-service assertion when credential/runtime-binding authority exists. For Mapbox, assert runtime config/global presence, Mapbox GL library load, and a live rendered surface (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers). Forced-fallback assertions are resilience checks only and cannot satisfy the live service contract.
+- Configured service mounts need negative pollution assertions. For Mapbox, assert
+  no fallback controls or placeholder marker buttons remain inside `.mapboxgl-map`,
+  and assert readiness through unforgeable evidence such as `.mapboxgl-canvas`
+  plus successful style/tile requests rather than stamped classes or
+  `data-map-status="ready"` alone.
 
 #### Flutter (integration_test)
 - Use `IntegrationTestWidgetsFlutterBinding` for widget tree access
@@ -124,6 +130,8 @@ assertion templates with LLM-generated, context-aware test code.
 | Container Boundaries | Render targets respected, JS-cleared containers correct | HIGH |
 | Layout Spacing | Flex/grid containers have gap/margin properties | MEDIUM |
 | Empty Containers | No visible containers > 100px without content | MEDIUM |
+| Live Service Binding | Configured services with credentials load the service library and live rendered surface; fallback-only is resilience, not success | HIGH |
+| Service Mount Pollution | Runtime-owned service containers do not contain fallback controls, placeholder buttons, or stamped readiness evidence | HIGH |
 | Expected Sections | All planned page sections present | LOW |
 
 ### Output Format
@@ -153,6 +161,8 @@ Focus on:
 2. Layout correctness (no zero-gap flex, no empty containers)
 3. Container boundary respect (render targets, placement rules)
 4. Expected sections presence
+5. Positive live-service binding when configured credentials/runtime authority exists; do not count forced fallback as satisfying the live service contract
+6. Negative service-mount pollution assertions for configured SDK/runtime surfaces; do not accept stamped readiness markers without runtime-created evidence
 
 Return a JSON object with:
 - `skill`: "contract-assertions-generator"
@@ -175,6 +185,8 @@ Focus on:
 2. Layout correctness (no zero-gap flex, no empty containers)
 3. Container boundary respect (render targets, placement rules)
 4. Expected sections presence
+5. Positive live-service binding when configured credentials/runtime authority exists; do not count forced fallback as satisfying the live service contract
+6. Negative service-mount pollution assertions for configured SDK/runtime surfaces; do not accept stamped readiness markers without runtime-created evidence
 
 Return a JSON object with:
 - `skill`: "contract-assertions-generator"

@@ -279,6 +279,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 4. Import actual components from `src/` - don't duplicate code
 5. Test each acceptance criterion with at least one test case
 6. Use port 8080 (configured in playwright.config.js)
+7. For formatted numeric display text, do not assert `String(raw).slice(...)` against the visible formatted node. Assert a normalized numeric value, a dedicated raw-value attribute, or the exact formatted display string.
+8. For configured browser services with credential/runtime-binding authority, generate a positive live-service assertion. Do not let a forced fallback be the passing path. For web Mapbox, assert the runtime config/global exists, Mapbox GL is loaded, and the live surface exists (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers); fallback assertions are resilience-only.
 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
@@ -338,6 +340,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 4. Import actual components from `src/` - don't duplicate code
 5. Test each acceptance criterion with at least one test case
 6. Use port 8080 (configured in playwright.config.js)
+7. For formatted numeric display text, do not assert `String(raw).slice(...)` against the visible formatted node. Assert a normalized numeric value, a dedicated raw-value attribute, or the exact formatted display string.
+8. For configured browser services with credential/runtime-binding authority, generate a positive live-service assertion. Do not let a forced fallback be the passing path. For web Mapbox, assert the runtime config/global exists, Mapbox GL is loaded, and the live surface exists (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers); fallback assertions are resilience-only.
 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
@@ -397,6 +401,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 4. Import actual components from `src/` - don't duplicate code
 5. Test each acceptance criterion with at least one test case
 6. Use port 8080 (configured in playwright.config.js)
+7. For formatted numeric display text, do not assert `String(raw).slice(...)` against the visible formatted node. Assert a normalized numeric value, a dedicated raw-value attribute, or the exact formatted display string.
+8. For configured browser services with credential/runtime-binding authority, generate a positive live-service assertion. Do not let a forced fallback be the passing path. For web Mapbox, assert the runtime config/global exists, Mapbox GL is loaded, and the live surface exists (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers); fallback assertions are resilience-only.
 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
@@ -465,6 +471,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 4. Import actual components from `src/` - don't duplicate code
 5. Test each acceptance criterion with at least one test case
 6. Use port 8080 (configured in playwright.config.js)
+7. For formatted numeric display text, do not assert `String(raw).slice(...)` against the visible formatted node. Assert a normalized numeric value, a dedicated raw-value attribute, or the exact formatted display string.
+8. For configured browser services with credential/runtime-binding authority, generate a positive live-service assertion. Do not let a forced fallback be the passing path. For web Mapbox, assert the runtime config/global exists, Mapbox GL is loaded, and the live surface exists (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers); fallback assertions are resilience-only.
 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components
@@ -524,6 +532,8 @@ You are a UI Test Generation agent. Your job is to create Playwright test files 
 4. Import actual components from `src/` - don't duplicate code
 5. Test each acceptance criterion with at least one test case
 6. Use port 8080 (configured in playwright.config.js)
+7. For formatted numeric display text, do not assert `String(raw).slice(...)` against the visible formatted node. Assert a normalized numeric value, a dedicated raw-value attribute, or the exact formatted display string.
+8. For configured browser services with credential/runtime-binding authority, generate a positive live-service assertion. Do not let a forced fallback be the passing path. For web Mapbox, assert the runtime config/global exists, Mapbox GL is loaded, and the live surface exists (`window.MAPBOX_KEY`, `window.mapboxgl`, `.mapboxgl-map`/`.mapboxgl-canvas`/markers); fallback assertions are resilience-only.
 
 **Your Process:**
 1. Parse the ticket's `files_created` to identify components

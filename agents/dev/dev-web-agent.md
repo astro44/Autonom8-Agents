@@ -179,6 +179,51 @@ Create test fixtures in `src/tests/` for standalone component validation:
 
 ---
 
+## Configured Service Mount Cleanup
+
+When repairing a configured runtime surface such as Mapbox, charts, video players,
+payment widgets, auth widgets, or other third-party SDK mounts, preserve the
+runtime-owned subtree and clean only the stale fallback scaffold.
+
+### Required Pattern
+
+- Read `project.yaml` and use the configured service, asset path, public runtime
+  config, and serve/deploy contract.
+- Before initializing the runtime, make the target mount neutral by removing only
+  stale fallback descendants, text/comment nodes, and placeholder controls that
+  belong to the old fallback state.
+- Keep fallback UI outside the runtime-owned mount, or hide/disable it when the
+  configured service and credentials are available.
+- Let the SDK create its own authoritative runtime evidence. For Mapbox this
+  means `new mapboxgl.Map(...)` creates `.mapboxgl-canvas` and loads style/tile
+  resources; do not stamp `.mapboxgl-map` or `data-map-status="ready"` as proof.
+- Preserve the surrounding host, details panels, data attributes, accessibility
+  labels, keyboard handlers, and service-created children.
+- For custom controls or markers, use service-native APIs when available. If a
+  custom element is required, make it distinct from fallback controls and attach
+  it through the runtime API rather than leaving fallback buttons inside the
+  service-owned mount.
+
+### Forbidden Cleanup
+
+Do not use broad destructive clears such as `replaceChildren()`, `innerHTML = ""`,
+`textContent = ""`, or host replacement on a configured service container unless
+the ticket explicitly owns the whole subtree and no runtime-owned children can
+exist. Those shortcuts often delete valid service output, labels, focus targets,
+and state that must survive repair.
+
+### Platform-Neutral Rule
+
+This is the web instance of a platform-neutral invariant: when a platform runtime
+owns a surface, repair the stale fallback/placeholder layer without destroying
+the runtime surface. In Flutter/iOS/Android that means preserving native map or
+chart widgets/views while removing fallback widgets around them. In backend,
+data, infra, and contract systems it means preserving tool-owned outputs and
+state while removing stale placeholder artifacts, then proving the real runtime,
+plan, schema, ABI, or test output instead of stamping success metadata.
+
+---
+
 ## Playwright Spec Template
 
 Create specs in `tests/` directory:

@@ -91,6 +91,45 @@ services:
 
 ---
 
+## Runtime-Owned Map Surface Rule
+
+Map containers are runtime-owned surfaces. The platform map SDK must create the
+live map surface; agents must not fake readiness by stamping status attributes,
+provider CSS classes, or placeholder markers.
+
+### Non-Destructive Cleanup
+
+When a map ticket reports a polluted live container, remove only stale fallback
+scaffold and placeholder controls. Preserve the map host, runtime-created
+children, focus state, labels, details panels, and data bindings.
+
+For web Mapbox, this means:
+- Keep fallback controls outside `.mapboxgl-map`, or hide them while Mapbox is
+  live.
+- Remove legacy fallback descendants such as placeholder marker buttons, fallback
+  lists, and fallback copy from the mount before `new mapboxgl.Map(...)`.
+- Let Mapbox create `.mapboxgl-canvas` and verify style/tile network requests.
+- Add markers through `new mapboxgl.Marker(...)`, not by leaving fallback buttons
+  inside the Mapbox-owned container.
+
+Never use broad subtree deletion (`replaceChildren`, `innerHTML = ""`, removing
+the whole host) as a cleanup strategy for a configured map surface unless the
+ticket explicitly owns the whole surface and no SDK-created children can exist.
+
+### Platform-Native Evidence
+
+- Web: configured public runtime key/global, map SDK loaded, real canvas/surface,
+  and successful provider network or tile/style evidence.
+- Flutter: map widget is present in the widget tree with configured style/tiles
+  and visible markers/annotations.
+- iOS/Android: native map view is present, configured, and populated through the
+  provider SDK with markers/annotations.
+- Backend/data/infra consumers of geo artifacts: verify generated coordinates,
+  schemas, route data, or deployment plans through deterministic output, not
+  placeholder files or stamped success flags.
+
+---
+
 ## Platform-Specific Implementations
 
 ### Web (HTML/CSS/JS)
